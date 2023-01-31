@@ -9,10 +9,11 @@ import {
 import RootLayout from "./pages/Root";
 import { Button, Card, Container, Row, Col, Image } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Books from "./pages/Books";
+import SternenDaemmerung from "./pages/SternenDaemmerung";
 import HomePage from "./pages/HomePage";
 import Bio from "./pages/Bio";
 import ErrorPage from "./pages/ErrorPage";
+import VonSternenGekuesst from "./pages/VonSternenGekuesst";
 
 function App() {
 
@@ -22,7 +23,8 @@ function App() {
       element: <RootLayout />,
       children: [
         { path: "/", element: <HomePage /> },
-        { path: "/buecher", element: <Books /> },
+        { path: "/vonsternengekuesst", element: <VonSternenGekuesst/> },
+        { path: "/sternendaemmerung", element: <SternenDaemmerung/> },
         { path: "/bio", element: <Bio /> },
         { path: "/aktuelles", element: <Aktuelles /> },
         { path: "/qnda", element: <QandA /> },
@@ -31,11 +33,8 @@ function App() {
     },
   ]);
 
-
-
   return (
     <RouterProvider router={router}>
-    
     </RouterProvider>
   );
 }

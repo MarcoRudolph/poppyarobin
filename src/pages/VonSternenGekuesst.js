@@ -1,8 +1,7 @@
 import BookPresentation from "../components/Book";
-import classes from "./Books.module.css";
-import { Image, Container, Col } from "react-bootstrap";
+import { Image, Container, Row, Col, Card } from "react-bootstrap";
 
-function Books() {
+function VonSternenGekuesst() {
   const book1 = {
     title: "Sternendämmerung",
     date: "29. April 2022",
@@ -16,23 +15,32 @@ function Books() {
   };
 
   return (
-    <Container className="fluid">
-      <Col className="col-12">
-        <Image
-          src="./assets/Buecher.jpg"
-          className="p-5 d-block fluid m-auto"
-          alt="Bücher.jpg"
-        />
-      </Col>
-      <Col className="col-12">
-        <Image
-          src="./assets/BuchText2.jpg"
-          className="d-block p-5 fluid m-auto"
-          alt="Buchtext.jpg"
-        />
-      </Col>
+    <Container className="d-flex flex-column">
+       <Row className="flex-grow-1 mt-5"> {/*Sternendämmerung */}
+        <h1 className="text-center text-responsive" style={{fontFamily:"desire", fontSize:"5rem"}}>&#57766;&#84;&#69;&#57751;&#78;&#69;&#57684;&#57411;&#196;&#77;&#57672;&#69;&#57751;&#85;&#78;&#71;</h1>
+      </Row>
+      <Row className="flex-grow-1 mt-5">
+         <Col className="xs-auto flex-row col-3">  {/*style={{ height: "800px", border:"1px solid black" }} */}
+          <img
+            src="./assets/Buch2.jpg"
+            className="img-fluid rounded"
+            alt="Bücher.jpg"
+            style={{objectFit: "cover"}}
+          />
+        </Col>
+        <Col style={{ width: "50%", height: "50%", minWidth: "450px" }}>
+          <Card style={{backgroundColor: "rgba(245, 245, 245, .6)", border:"1px #FFDE2E solid"}}>
+            <Card.Body>
+              <Card.Title style={{fontSize: "28pt", fontFamily:"Dancing"}}>Die Reise geht weiter</Card.Title>
+              <Card.Subtitle style={{fontSize: "24pt", fontFamily:"Dancing"}}>Auf zur Rettung</Card.Subtitle>
+              <Card.Text style={{fontSize: "20pt", fontFamily:"Dancing"}}>Mina Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</Card.Text>
+            
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </Container>
   );
 }
 
-export default Books;
+export default VonSternenGekuesst;
