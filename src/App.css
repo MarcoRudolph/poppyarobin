@@ -1,24 +1,8 @@
-.App {
-  text-align: center;
-}
-
-/* body,
-html {
+html,
+body {
   height: 100%;
-} */
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-.firstfont {
-  color:"#444444";
+  margin: 0;
+  font-size: calc(15px + 0.390625vw);
 }
 
 .eternal{
@@ -29,9 +13,7 @@ html {
     color: #444444;
     font-weight: 400;
     font-family: 'Dancing Script', cursive;
-
 }
-
 
 @media (max-width: 992px) {
   .eternal {
@@ -39,88 +21,72 @@ html {
   }
 }
 
-
 @media (min-width: 768px) {
   .navbarsmall {
     margin-top: 50px;
   }
 }
 
-.mom{
-  font-family: 'Aboreto', cursive;
-  font-size: 20pt;
-  text-decoration: none;
-
+.linkgray{
+  width: 55px;
+  height: 55px;
+  background: transparent;
+  border:0;
+  color:#919191;
 }
 
-.sis {
-  font-family: 'Dancing Script', cursive;
-  font-size:40pt;
+.darkgray {
+  color: #444444;
 }
 
-.bro {
-  font-family: 'Dancing', serif;
-  font-weight: 400;
-  font-size: 40pt;
-  color: "#444444";
-  text-decoration: none;
-
+.lightgray {
+  color:#919191;
 }
-
-
 
 /* Noto Serif */
-.pap {
+.font-desire {
   font-family: "desire";
-  /* font-weight: 700; */
-  font-size:80pt;
-  color: "#444444";
-  
-
+  text-decoration: "none";
 }
 
-
-.bgimage {
-  /* background: url("../public/assets/poppy.jpg") no-repeat center fixed; */
-  background: url("https://images5.alphacoders.com/412/thumb-1920-412348.jpg") no-repeat 0 0; 
-  /* background-size: "cover"; */
+.font-dancing {
+  font-family: "Dancing";
+  text-decoration: "none";
 }
 
-.book-card {
-  max-width: 400px;
-  margin: 0 auto;
+.font-aboreto{
+  font-family: 'Aboreto', cursive;
+  text-decoration: none;
 }
 
-.book-img {
+.card-img-top {
   width: 100%;
-  height: auto;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  height: 40vh;
+  object-fit: cover;
 }
 
-.book-title {
-  font-size: 1.5rem;
-  color: #444444;
-  font-weight: bold;
-  margin-bottom: 1rem;
+.size-header {
+  font-size: 2rem;
 }
 
-.book-author {
-  font-size: 1.25rem;
-  font-style: italic;
-  color: #444444;
-  margin-bottom: 1rem;
+.box {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
 }
 
-.book-description {
-  font-size: 1rem;
-  line-height: 1.5;
-  text-align: justify;
-  color: #444444;
-  margin-bottom: 1rem;
+.box .row.header {
+  flex: 0 1 auto;
 }
 
-.book-buy-button {
-  width: 100%;
+.box .row.content {
+  display: flex;
+  flex-flow: column;
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+.box .row.footer {
+  flex: 0 1 40px;
 }
 

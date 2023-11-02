@@ -13,7 +13,7 @@ import SternenDaemmerung from "./pages/SternenDaemmerung";
 import HomePage from "./pages/HomePage";
 import Bio from "./pages/Bio";
 import ErrorPage from "./pages/ErrorPage";
-import VonSternenGekuesst from "./pages/VonSternenGekuesst";
+import Datenschutz from './pages/Datenschutz';
 
 function App() {
 
@@ -23,10 +23,11 @@ function App() {
       element: <RootLayout />,
       children: [
         { path: "/", element: <HomePage /> },
-        { path: "/vonsternengekuesst", element: <VonSternenGekuesst/> },
         { path: "/sternendaemmerung", element: <SternenDaemmerung/> },
         { path: "/bio", element: <Bio /> },
         { path: "/aktuelles", element: <Aktuelles /> },
+        { path: "/impressum", element: <Impressum /> },
+        { path: "/datenschutz", element: <Datenschutz /> },
         { path: "/qnda", element: <QandA /> },
       ],
       errorElement:<ErrorPage/>

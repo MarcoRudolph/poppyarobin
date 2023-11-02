@@ -3,19 +3,6 @@ import { Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 const NavBar = (props) => {
-  // const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
-  //   <a
-  //     href=""
-  //     ref={ref}
-  //     onClick={(e) => {
-  //       e.preventDefault();
-  //       onClick(e);
-  //     }}
-  //     className="px-5 text-dark mom"
-  //   >
-  //     {children}
-  //   </a>
-  // ));
 
   return (
     <Navbar
@@ -62,38 +49,34 @@ const NavBar = (props) => {
       </Navbar.Toggle>
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mx-auto">
-          <Link to="/" className="px-5 text-dark mom my-auto" href="#link">
+          <Link to="/" className="px-5 text-dark font-dancing my-auto text-responsive" href="#link">
             Home
           </Link>
-          <Link to="/bio" className="px-5 text-dark mom my-auto" href="#link">
+          <Link to="/bio" className="px-5 text-dark font-dancing my-auto" href="#link">
             Biographie
           </Link>
 
           <NavDropdown
             id="basic-navbar-nav"
-            className="px-5 text-dark mom"
-            title={<span className="text-dark mom">Bücher</span>}
-          >
+            className="px-5 text-dark font-dancing"
+            title={<span className="text-dark font-dancing">Bücher</span>}>
             <NavDropdown.Item
               href="/sternendaemmerung"
-              className="mom"
-              style={{ fontSize: "19pt" }}
-            >
+              className="font-dancing"
+              style={{ fontSize: "19pt" }}>
               Sternendämmerung
             </NavDropdown.Item>
           </NavDropdown>
           <Link
             to="/aktuelles"
-            className="px-5 text-dark mom my-auto"
-            href="#final-link"
-          >
+            className="px-5 text-dark font-dancing my-auto"
+            href="#final-link">
             Aktuelles
           </Link>
           <Link
             to="/qnda"
-            className="px-5 text-dark mom my-auto"
-            href="#final-link"
-          >
+            className="px-5 text-dark font-dancing my-auto"
+            href="#final-link">
             Q&A
           </Link>
         </Nav>
