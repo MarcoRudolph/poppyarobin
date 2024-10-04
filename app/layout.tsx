@@ -3,11 +3,12 @@ import { Open_Sans as FontSans } from "next/font/google";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
+import NavBar from "../components/NavBar";
 
 const fontSans = FontSans({
   subsets: ["latin"],
-  weight: ["400", "600", "700"], // Include normal (400), semi-bold (600), and bold (700) weights
-  style: ["normal", "italic"], // Include normal and italic styles
+  weight: ["400", "600", "700"],
+  style: ["normal", "italic"],
   variable: "--font-sans",
 });
 
@@ -21,22 +22,23 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <head />
       <body
         className={cn(
-          "flex flex-col min-h-screen bg-white font-sans antialiased",
+          "relative flex flex-col min-h-screen bg-white font-sans antialiased",
           fontSans.variable
         )}
       >
-        <div className="w-full h-48 md:h-56 lg:h-[500px] relative">
-          {/* Image Section */}
+        <div className="fixed top-0 left-0 w-full h-full z-[-1]">
           <Image
-             src="/images/background2.png"
-             alt="Header image"
-             layout="fill"
-             objectFit="contain"
-             className="absolute inset-0 rounded-xl"
-             quality={100}
+            src="/images/poppy.jpg"
+            alt="Header image"
+            fill
+            quality={100}
+            style={{ objectFit: "cover" }}
           />
         </div>
-        {children}
+        <NavBar className="relative z-10" />
+        <main className="relative z-10">
+          {children}
+        </main>
       </body>
     </html>
   );
