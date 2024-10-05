@@ -1,32 +1,27 @@
 "use client";
-import { Open_Sans as FontSans } from "next/font/google";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
-import NavBar from "../components/NavBar";
 
-const fontSans = FontSans({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-sans",
-});
+import Image from "next/image";
+import React, { useRef, ReactNode } from "react";
+import { OpenSans, DesirePro, Dancing } from "../lib/fonts";
+import { StickyNavbar } from "@/components/NavBar";
+import { FaChevronDown } from "react-icons/fa";
 
 interface RootLayoutProps {
   children: ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+  const newsRef = useRef<HTMLElement>(null);
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="de" suppressHydrationWarning>
       <head />
       <body
-        className={cn(
-          "relative flex flex-col min-h-screen bg-white font-sans antialiased",
-          fontSans.variable
-        )}
+        className={`relative flex min-h-screen flex-col bg-white antialiased ${OpenSans.className || ""}`}
       >
-        <div className="fixed top-0 left-0 w-full h-full z-[-1]">
+        <StickyNavbar />
+
+        <div className="relative h-[calc(100vh-70px)] w-full">
           <Image
             src="/images/poppy.jpg"
             alt="Header image"
@@ -34,9 +29,36 @@ export default function RootLayout({ children }: RootLayoutProps) {
             quality={100}
             style={{ objectFit: "cover" }}
           />
+          <div className="absolute inset-x-0 top-[200px] flex justify-center">
+            <div className="flex flex-col items-center justify-center gap-4">
+              {" "}
+              <h1
+                className={`mt-5 text-center text-9xl text-black ${DesirePro.className}`}
+              >
+                Poppy A. Robin
+              </h1>
+              <h1
+                className={`mt-5 text-center text-7xl text-black ${Dancing.className}`}
+              >
+                Eternal Romantasy
+              </h1>
+            </div>
+          </div>
+          {/* Down Arrow */}
+          <div className="absolute inset-x-0 bottom-10 flex justify-center">
+            <button
+              onClick={() => {
+                newsRef.current?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="animate-bounce text-white"
+              aria-label="Scroll to news section"
+            >
+              <FaChevronDown size={30} color="darkslategrey" />
+            </button>
+          </div>
         </div>
-        <NavBar className="relative z-10" />
-        <main className="relative z-10">
+
+        <main className="relative mt-10" ref={newsRef}>
           {children}
         </main>
       </body>
