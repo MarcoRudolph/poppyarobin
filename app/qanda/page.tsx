@@ -19,7 +19,7 @@ const UnderConstruction = () => {
       {/* Under Construction Text */}
       <div className="flex flex-col items-center justify-center mt-10">
         <h1 className="text-4xl font-bold">Under Construction</h1>
-        <p className="text-lg mt-5">We're working hard to bring you something amazing. Please check back soon!</p>
+        <p className="text-lg mt-5">An der Seite wird noch getüftelt.</p>
       </div>
     </div>
   );
