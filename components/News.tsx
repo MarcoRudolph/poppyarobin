@@ -1,5 +1,6 @@
 import React from "react";
 import { DesirePro } from "@/lib/fonts";
+import Image from 'next/image';
 
 const News: React.FC = () => {
   return (
@@ -11,15 +12,22 @@ const News: React.FC = () => {
           Dreamer! <br />
           ..bald ist es soweit.
         </h2>
-        <p className="mb-4 text-3xl">Erscheinungsdatum: 19.10.2024</p>
+        <p className="mb-4 text-3xl">Erscheinungsdatum: 18.10.2024</p>
         <p className="mb-8 text-3xl">Das E-Book erhaltet ihr nur bei Amazon.</p>
+        <div className="flex items-center lg:w-2/3 lg:h-auto w-2/3 h-auto overflow-hidden shadow-[10px_10px_15px_rgba(0,0,0,0.3)] lg:mr-10 lg:mt-0 mt-10 rounded-md">
+  <Image
+    src="/images/dreamerdeck.jpeg"
+    alt="First Image"
+    layout="responsive"
+    width={1600}
+    height={1059}
+    objectFit="cover"
+    className="rounded-md w-full h-full"
+  />
+</div>
 
-        <img
-          src="/path-to-your-image1.jpg"
-          alt="First Image"
-          className="mt-4 w-full object-cover"
-        />
-        <p className="mb-8 text-3xl">
+       
+        <p className="mb-8 text-3xl mt-5">
           Bei der Buchhandlung Graff könnt ihr noch persönlich signierte Bücher
           bestellen
         </p>
@@ -38,11 +46,14 @@ const News: React.FC = () => {
         <p className="mb-2  text-3xl">
           Dreamer! ..Unser neues Buch erscheint.{" "}
         </p>
-        <img
-          src="/path-to-your-image1.jpg"
+        {/* <Image
+          src="/images/fbm.jpg"
           alt="First Image"
+          width={200}
+          height={200}
+          objectFit="contain"
           className="mt-4 w-full object-cover"
-        />
+        /> */}
       </div>
     </div>
   );

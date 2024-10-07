@@ -16,9 +16,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="de" suppressHydrationWarning>
       <head />
-      <body className={`relative flex flex-col bg-white antialiased ${OpenSans.className || ""}`}>
+      <body className={`relative w-full flex flex-col bg-white antialiased ${OpenSans.className || ""}`}>
         <StickyNavbar />
-        <main className="relative">
+        <main className="relative w-full">
           {children}
         </main>
       </body>
