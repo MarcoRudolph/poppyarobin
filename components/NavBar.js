@@ -9,11 +9,12 @@ import {
   Card,
   Collapse,
 } from "@material-tailwind/react";
+import { useRouter } from "next/navigation";
 import { OpenSans, DesirePro } from "../lib/fonts";
 
 export function StickyNavbar() {
   const [openNav, setOpenNav] = React.useState(false);
-
+  
   React.useEffect(() => {
     window.addEventListener(
       "resize",
@@ -31,7 +32,7 @@ export function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <a href="#" className={textStyle}>
+        <a href="/" className={textStyle}>
           Home
         </a>
       </Typography>
@@ -41,7 +42,7 @@ export function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <a href="#" className={textStyle}>
+        <a href="/about" className={textStyle}>
           About
         </a>
       </Typography>
@@ -51,7 +52,7 @@ export function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <a href="#" className={textStyle}>
+        <a href="/werke" className={textStyle}>
           Werke
         </a>
       </Typography>
@@ -61,7 +62,7 @@ export function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <a href="#" className={textStyle}>
+        <a href="/qanda" className={textStyle}>
           Q & A
         </a>
       </Typography>
@@ -115,14 +116,6 @@ export function StickyNavbar() {
       </div>
       <Collapse open={openNav}>
         {navList}
-        <div className="flex items-center gap-x-1">
-          <Button fullWidth variant="text" size="sm" className="">
-            <span>Log In</span>
-          </Button>
-          <Button fullWidth variant="gradient" size="sm" className="">
-            <span>Sign in</span>
-          </Button>
-        </div>
       </Collapse>
     </Navbar>
   );
