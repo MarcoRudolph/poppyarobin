@@ -16,9 +16,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="de" suppressHydrationWarning>
       <head />
-      <body
-        className={`relative flex min-h-screen flex-col bg-white antialiased ${OpenSans.className || ""}`}
-      >
+      <body className={`relative flex flex-col bg-white antialiased ${OpenSans.className || ""}`}>
         <StickyNavbar />
 
         <div className="relative h-[calc(100vh-70px)] w-full">
@@ -31,15 +29,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
           />
           <div className="absolute inset-x-0 top-[200px] flex justify-center">
             <div className="flex flex-col items-center justify-center gap-4">
-              {" "}
-              <h1
-                className={`mt-5 text-center text-9xl text-black ${DesirePro.className}`}
-              >
+              <h1 className={`mt-5 text-center text-9xl text-black ${DesirePro.className}`}>
                 Poppy A. Robin
               </h1>
-              <h1
-                className={`mt-5 text-center text-7xl text-black ${Dancing.className}`}
-              >
+              <h1 className={`mt-5 text-center text-7xl text-black ${Dancing.className}`}>
                 Eternal Romantasy
               </h1>
             </div>
