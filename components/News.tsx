@@ -1,11 +1,11 @@
 import React from "react";
 import { DesirePro } from "@/lib/fonts";
-import Image from 'next/image';
+import Image from "next/image";
 
 const News: React.FC = () => {
   return (
     <div
-      className={`flex w-1/2 flex-col lg:flex-row lg:space-x-6 ${DesirePro.className}`}
+      className={`flex flex-col lg:w-1/2 lg:flex-row lg:space-x-6 ${DesirePro.className}`}
     >
       <div className="w-full p-4 lg:w-1/2">
         <h2 className="mb-4 text-6xl font-bold">
@@ -14,20 +14,20 @@ const News: React.FC = () => {
         </h2>
         <p className="mb-4 text-3xl">Erscheinungsdatum: 18.10.2024</p>
         <p className="mb-8 text-3xl">Das E-Book erhaltet ihr nur bei Amazon.</p>
-        <div className="flex items-center lg:w-2/3 lg:h-auto w-2/3 h-auto overflow-hidden shadow-[10px_10px_15px_rgba(0,0,0,0.3)] lg:mr-10 lg:mt-0 mt-10 rounded-md">
-  <Image
-    src="/images/dreamerdeck.jpeg"
-    alt="First Image"
-    layout="responsive"
-    width={1600}
-    height={1059}
-    objectFit="cover"
-    className="rounded-md w-full h-full"
-  />
-</div>
+        <div className="mt-10 flex h-fit items-center overflow-hidden lg:mr-10 lg:mt-0">
+          <Image
+            src="/images/dreamerdeck-removebg.png"
+            alt="First Image"
+            layout="responsive"
+            loading="lazy"
+            width={1600}
+            height={1059}
+            objectFit="cover"
+            className="h-full w-full rounded-md"
+          />
+        </div>
 
-       
-        <p className="mb-8 text-3xl mt-5">
+        <p className="mb-8 mt-5 text-3xl">
           Bei der Buchhandlung Graff könnt ihr noch persönlich signierte Bücher
           bestellen
         </p>
@@ -40,11 +40,13 @@ const News: React.FC = () => {
         </h2>
         <p className="mb-4 text-3xl">Freitag 18.10. 2024</p>
         <p className="mb-8 text-3xl">
-          Wir sind in der Halle xy und lesen sogar etwas vor.
+          Wir feiern den Release unseres neuen Buchs "Dreamer". Kommt vorbei!
+          ...cEs wird legendär.
         </p>
         <p className="mt-2 text-3xl">Samstag 19.10. 2024</p>
         <p className="mb-2  text-3xl">
-          Dreamer! ..Unser neues Buch erscheint.{" "}
+          Am Samstag sind wir nur noch als Gäste unterwegs. Wir sehen uns beim
+          Dunkelstern Verlag!
         </p>
         {/* <Image
           src="/images/fbm.jpg"

@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import "../globals.css";
-
+import "../../globals.css";
+import React, { useRef, ReactNode } from "react";
 const UnderConstruction = () => {
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center">
