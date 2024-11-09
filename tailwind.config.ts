@@ -9,7 +9,11 @@ const config: Config = {
     "./node_modules/@material-tailwind/react/theme/components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        desire: ["DesirePro", "sans-serif"], // Benenne die Schriftart für einfacheren Zugriff
+      },
+    },
   },
 };
 

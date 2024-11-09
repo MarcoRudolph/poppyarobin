@@ -10,9 +10,9 @@ const News: React.FC = () => {
       <div className="w-full p-4 lg:w-1/2">
         <h2 className="mb-4 text-6xl font-bold">
           Dreamer! <br />
-          ..bald ist es soweit.
+          ..es ist soweit.
         </h2>
-        <p className="mb-4 text-3xl">Erscheinungsdatum: 18.10.2024</p>
+        <p className="mb-4 text-3xl">Erscheinungsdatum war der 18.10.2024</p>
         <p className="mb-8 text-3xl">Das E-Book erhaltet ihr nur bei Amazon.</p>
         <div className="mt-10 flex h-fit items-center overflow-hidden lg:mr-10 lg:mt-0">
           <Image
@@ -36,17 +36,15 @@ const News: React.FC = () => {
       {/* First Column */}
       <div className="w-full p-4 lg:w-1/2">
         <h2 className="mb-4 text-6xl font-bold">
-          Wir sind auf der Frankfurter Buchmesse!
+          Wir sind auf der Elmshorner Buchmesse!
         </h2>
-        <p className="mb-4 text-3xl">Freitag 18.10. 2024</p>
-        <p className="mb-8 text-3xl">
-          Wir feiern den Release unseres neuen Buchs "Dreamer". Kommt vorbei!
-          ...cEs wird legendär.
+        <p className="mb-4 text-3xl">Samstag 01.03.2025 9-18h</p>
+        <p className="mb-4 text-3xl">
+          In der Bücherrei - Königstr.56, 25335 Elmshorn
         </p>
-        <p className="mt-2 text-3xl">Samstag 19.10. 2024</p>
-        <p className="mb-2  text-3xl">
-          Am Samstag sind wir nur noch als Gäste unterwegs. Wir sehen uns beim
-          Dunkelstern Verlag!
+        <p className="mb-8 text-3xl">
+          Wir feiern weiter den Release unseres neuen Buchs "Dreamer". Kommt
+          vorbei!
         </p>
         {/* <Image
           src="/images/fbm.jpg"

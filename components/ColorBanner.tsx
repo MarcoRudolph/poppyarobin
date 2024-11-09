@@ -34,7 +34,7 @@ const ColorBanner: React.FC<BannerProps> = ({ quote, smallImagePath }) => {
               "Shae ist ein Charakter der genauso widersprüchlich wie
               authentisch ist. Ihre unter einer Titanschale begrabene
               Verletzlichkeit zeigte sich selten, dafür aber umso spürbarer. Ich
-              habe jeden ihrer Gedanken gefühlt, sie verstanden.""
+              habe jeden ihrer Gedanken gefühlt, sie verstanden."
             </p>
           </div>
         </div>

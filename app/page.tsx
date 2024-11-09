@@ -62,7 +62,7 @@ export default function Home() {
             quote={"Heidi Heida"}
             smallImagePath={"/images/pair.jpeg"}
           />
-          <div id="about mt-[80px]">
+          <div id="about" className="mt-[80px]">
             <About />
           </div>
         </div>

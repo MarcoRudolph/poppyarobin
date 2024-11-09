@@ -52,6 +52,16 @@ const Dreamer = () => {
             quality={100}
             objectFit="contain"
           />
+          <div className="z-[10] mt-5 flex justify-center justify-center">
+            <a
+              href="https://www.amazon.de/Dreamer-Tr%C3%A4ume-l%C3%BCgen-nicht-futuristischen/dp/3989470213?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&sr=8-1#customerReviews"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1 inline-block rounded-lg bg-black px-6 py-3 text-4xl  font-semibold text-[#e0b2c8] transition duration-300 ease-in-out hover:bg-[#e0b2c8] hover:text-black"
+            >
+              Rezensionen
+            </a>
+          </div>
         </div>
         <div className="ml-4 mt-10 w-full lg:mt-0 lg:w-1/2">
           <h1 className="text-6xl">

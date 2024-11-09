@@ -26,10 +26,10 @@ export function StickyNavbar() {
     );
   }, []);
 
-  const textStyle = `flex items-center text-4xl ${DesirePro.className}`;
+  const textStyle = `flex items-center text-4xl ${DesirePro.className} text-black`;
 
   const navList = (
-    <ul className="mb-4 mt-2 flex flex-col gap-6 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-20">
+    <ul className="mb-4 mt-2 flex flex-col gap-6  lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-20">
       <Typography
         as="li"
         variant="small"
@@ -54,9 +54,13 @@ export function StickyNavbar() {
       <Menu>
         <MenuHandler>
           <Typography
-            className={`flex cursor-pointer items-center p-1 text-4xl font-normal text-black ${DesirePro.className}`}
+            className={`flex cursor-pointer items-center p-1 text-4xl text-black ${DesirePro.className}`}
           >
-            Werke
+            <p
+              className={`flex cursor-pointer items-center p-1 text-4xl text-black ${DesirePro.className}`}
+            >
+              Werke
+            </p>
           </Typography>
         </MenuHandler>
         <MenuList className="lg:absolute lg:left-0 lg:top-full lg:z-20">
@@ -96,7 +100,7 @@ export function StickyNavbar() {
   );
 
   return (
-    <Navbar className="sticky top-0 z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-4">
+    <Navbar className="sticky top-0 z-30 h-max max-w-full rounded-none bg-white px-4 py-2 lg:px-8 lg:py-4">
       <div className="flex items-center justify-center text-blue-gray-900">
         <div className="flex items-center gap-4">
           <div className="mr-4 hidden lg:block">{navList}</div>
