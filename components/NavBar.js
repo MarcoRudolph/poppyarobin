@@ -56,11 +56,11 @@ export function StickyNavbar() {
           <Typography
             className={`flex cursor-pointer items-center p-1 text-4xl text-black ${DesirePro.className}`}
           >
-            <p
+            <span
               className={`flex cursor-pointer items-center p-1 text-4xl text-black ${DesirePro.className}`}
             >
               Werke
-            </p>
+            </span>
           </Typography>
         </MenuHandler>
         <MenuList className="lg:absolute lg:left-0 lg:top-full lg:z-20">

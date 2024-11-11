@@ -7,23 +7,33 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "drizzlepush": "drizzle-kit push",
+    "drizzlegen": "npx drizzle-kit generate",
+    "drizzlemig": "npx drizzle-kit migrate",
     "format": "prettier . --write",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@material-tailwind/react": "^2.1.10",
+    "@next/env": "^15.0.3",
+    "@vercel/postgres": "^0.10.0",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.36.1",
     "eslint": "^8.57.1",
     "next": "^14.2.14",
+    "next-auth": "^4.24.10",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.3.0"
   },
   "devDependencies": {
     "@types/node": "20.16.10",
+    "@types/pg": "^8.11.10",
     "@types/react": "18.3.11",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.18",
+    "drizzle-kit": "^0.28.0",
     "eslint-config-next": "14.1.3",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-tailwindcss": "^3.15.1",
@@ -31,6 +41,7 @@
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.12",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.19.2",
     "typescript": "5.6.2"
   }
 }
