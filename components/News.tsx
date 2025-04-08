@@ -1,6 +1,6 @@
-import React from "react";
-import { DesirePro } from "@/lib/fonts";
-import Image from "next/image";
+import React from 'react';
+import { DesirePro } from '@/lib/fonts';
+import Image from 'next/image';
 
 const News: React.FC = () => {
   return (
@@ -36,15 +36,16 @@ const News: React.FC = () => {
       {/* First Column */}
       <div className="w-full p-4 lg:w-1/2">
         <h2 className="mb-4 text-6xl font-bold">
-          Wir sind auf der Elmshorner Buchmesse!
+          Wir waren auf der Elmshorner Buchmesse!
         </h2>
-        <p className="mb-4 text-3xl">Samstag 01.03.2025 9-18h</p>
+        <p className="mb-4 text-3xl">Samstag 01.03.2025</p>
         <p className="mb-4 text-3xl">
           In der Bücherrei - Königstr.56, 25335 Elmshorn
         </p>
         <p className="mb-8 text-3xl">
-          Wir feiern weiter den Release unseres neuen Buchs "Dreamer". Kommt
-          vorbei!
+          So viele begeisterte Besucher, dass sich lange Schlangen vor dem
+          Eingang bildeten! Wir haben nicht nur zahlreiche Bücher verkauft,
+          sondern auch wunderbare Gespräche mit Leserinnen und Lesern geführt.
         </p>
         {/* <Image
           src="/images/fbm.jpg"

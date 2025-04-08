@@ -1,5 +1,9 @@
+// next.config.mjs
 export default {
-  reactStrictMode: true,
-  swcMinify: true,
-  // Add more Next.js configuration options if needed
+  webpack: (config) => {
+    config.resolve.fallback = {
+      "pg-native": false, // Ignoriere pg-native
+    };
+    return config;
+  },
 };

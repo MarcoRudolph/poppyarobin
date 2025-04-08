@@ -11,9 +11,11 @@ export type VorschlagType = {
 export type CommentType = {
   id: number;
   vorschlagId: number;
-  userId: string;
+  userId: number; // Changed from string to number
   text: string;
   likes: number;
+  userName: string | null;
+  userImage?: string | null;
 };
 
 export type ThemaType = {

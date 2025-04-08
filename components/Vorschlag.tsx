@@ -1,41 +1,39 @@
-// components/Vorschlag.tsx
-import { VorschlagType } from "@/util/types";
+"use client";
+
 import React, { useState, useEffect } from "react";
+import { VorschlagType } from "@/util/types";
 import { FcLike, FcLikePlaceholder } from "react-icons/fc";
-import { db } from "../drizzle";
-import { userLikes, vorschlaege } from "../drizzle/schema";
-import { eq, and } from "drizzle-orm";
 import { useSession } from "next-auth/react";
-import { sql } from "drizzle-orm";
+import {
+  checkIfUserLiked,
+  addLike,
+  removeLike,
+} from "../drizzle/actions";
 
 interface VorschlagProps {
   vorschlag: VorschlagType;
+  onClick?: (vorschlag: VorschlagType) => void;
+  isDetailedView?: boolean;
 }
 
-const Vorschlag: React.FC<VorschlagProps> = ({ vorschlag }) => {
+const Vorschlag: React.FC<VorschlagProps> = ({
+  vorschlag,
+  onClick,
+  isDetailedView = false,
+}) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(vorschlag.likes);
   const { data: session } = useSession();
   const userId = session?.user?.id;
 
   useEffect(() => {
-    const checkIfLiked = async () => {
+    (async () => {
       if (userId) {
-        const result = await db
-          .select()
-          .from(userLikes)
-          .where(
-            and(
-              eq(userLikes.userId, userId),
-              eq(userLikes.vorschlagId, vorschlag.id),
-            ),
-          );
-
-        setLiked(result.length > 0);
+        const numericUserId = parseInt(userId, 10);
+        const isLiked = await checkIfUserLiked(numericUserId, vorschlag.id);
+        setLiked(isLiked);
       }
-    };
-
-    checkIfLiked();
+    })();
   }, [userId, vorschlag.id]);
 
   const likeVorschlag = async () => {
@@ -44,58 +42,41 @@ const Vorschlag: React.FC<VorschlagProps> = ({ vorschlag }) => {
       return;
     }
 
+    const numericUserId = parseInt(userId, 10);
+
     if (liked) {
-      // Like entfernen
-      await db
-        .delete(userLikes)
-        .where(
-          and(
-            eq(userLikes.userId, userId),
-            eq(userLikes.vorschlagId, vorschlag.id),
-          ),
-        );
-
-      await db
-        .update(vorschlaege)
-        .set({ likes: sql`${vorschlaege.likes} - 1` })
-        .where(eq(vorschlaege.id, vorschlag.id));
-
+      await removeLike(numericUserId, vorschlag.id);
       setLiked(false);
       setLikeCount(likeCount - 1);
     } else {
-      // Like hinzufügen
-      await db.insert(userLikes).values({
-        userId,
-        vorschlagId: vorschlag.id,
-      });
-
-      await db
-        .update(vorschlaege)
-        .set({ likes: sql`${vorschlaege.likes} + 1` })
-        .where(eq(vorschlaege.id, vorschlag.id));
-
+      await addLike(numericUserId, vorschlag.id);
       setLiked(true);
       setLikeCount(likeCount + 1);
     }
   };
 
-  return (
-    <div className="flex flex-row">
-      <div className="flex flex-col">
-        <div className="flex flex-row items-start justify-center">
-          <p className="text-left text-2xl">
-            {likeCount} Likes | {vorschlag.comments} Kommentare
-          </p>
-        </div>
-        <div>
-          <p className="text-left text-2xl">{vorschlag.text}</p>
-        </div>
-      </div>
-      <div>
-        <button className="text-4xl" onClick={likeVorschlag}>
+  if (isDetailedView) {
+    // Detailed view with like functionality
+    return (
+      <div className="flex items-center mt-4">
+        <button className="text-4xl mr-2" onClick={likeVorschlag}>
           {liked ? <FcLike /> : <FcLikePlaceholder />}
         </button>
+        <span>{likeCount} Likes</span>
       </div>
+    );
+  }
+
+  // List view
+  return (
+    <div
+      className="border rounded p-2 mb-2 cursor-pointer hover:bg-gray-100"
+      onClick={() => onClick && onClick(vorschlag)}
+    >
+      <h3 className="text-xl font-semibold">{vorschlag.ueberschrift}</h3>
+      <p className="text-gray-600">
+        {likeCount} Likes | {vorschlag.comments} Kommentare
+      </p>
     </div>
   );
 };

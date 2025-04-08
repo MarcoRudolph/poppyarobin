@@ -6,7 +6,6 @@ import {
   integer,
   timestamp,
   uniqueIndex,
-  varchar,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable(
@@ -20,7 +19,7 @@ export const users = pgTable(
   },
   (users) => ({
     uniqueIdx: uniqueIndex("unique_idx").on(users.email),
-  }),
+  })
 );
 
 export const themen = pgTable("themen", {
@@ -58,5 +57,16 @@ export const userLikes = pgTable("user_likes", {
     .notNull(),
   vorschlagId: integer("vorschlag_id")
     .references(() => vorschlaege.id)
+    .notNull(),
+});
+
+// New table for comment likes
+export const commentLikes = pgTable("comment_likes", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .references(() => users.id)
+    .notNull(),
+  commentId: integer("comment_id")
+    .references(() => kommentare.id)
     .notNull(),
 });

@@ -1,26 +1,13 @@
-"use client";
-
-import Image from "next/image";
-import React, { useRef, ReactNode } from "react";
-import { OpenSans, DesirePro, Dancing } from "../lib/fonts";
-import { StickyNavbar } from "@/components/NavBar";
-
-
-interface RootLayoutProps {
-  children: ReactNode;
-}
-
-export default function RootLayout({ children }: RootLayoutProps) {
- 
-
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="de" suppressHydrationWarning>
-      <head />
-      <body className={`relative w-full flex flex-col bg-white antialiased ${DesirePro.className}`}>
-        <StickyNavbar />
-        <main className="relative w-full">
-          {children}
-        </main>
+    <html lang="en">
+      <body>
+        {/* This will render either mobile or desktop children based on middleware */}
+        {children}
       </body>
     </html>
   );

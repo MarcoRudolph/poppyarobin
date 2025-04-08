@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "checkJs": false, // Change to true if you want type-checking on JS files
     "skipLibCheck": true,
@@ -10,7 +14,10 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "typeRoots": ["./types", "./node_modules/@types"],
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ],
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
@@ -20,8 +27,11 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
-    }
+      "@/*": [
+        "./*"
+      ]
+    },
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
@@ -30,8 +40,10 @@
     "**/*.mjs",
     "**/*.js",
     ".next/types/**/*.ts",
-    "postcss.config.cjs",
+    "postcss.config.mjs",
     "prettier.config.cjs"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

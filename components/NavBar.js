@@ -92,7 +92,7 @@ export function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <a href="/qanda" className={textStyle}>
+        <a href="/communitybook" className={textStyle}>
           Communitybook
         </a>
       </Typography>
