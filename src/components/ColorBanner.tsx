@@ -29,10 +29,10 @@ const ColorBanner: React.FC<BannerProps> = ({ quote, smallImagePath }) => {
           {/* Right column - Placeholder text */}
           <div className="w-1/2 p-4 text-center sm:text-left">
             <p className="text-xl leading-relaxed text-black">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
+              Shae ist ein Charakter der genauso wiedersprüchlich wie
+              authentisch ist. Ihre unter einer Titanschale begrabene
+              Verletzlichkeit zeigte sich selten, dafür aber umso spürbarer. Ich
+              habe jeden ihrer Gedanken gefühlt, sie verstanden.
             </p>
           </div>
         </div>
