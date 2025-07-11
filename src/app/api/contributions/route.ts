@@ -1,21 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createContribution } from '../../../drizzle/actions';
-import { getServerSession } from 'next-auth';
+import { db } from '../../../drizzle';
+import { users } from '../../../drizzle/schema';
+import { eq } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
-    // Get the session to verify the user is authenticated
-    const session = await getServerSession();
+    const body = await request.json();
+    const { themaId, title, content, token } = body;
 
-    if (!session?.user?.id) {
+    // Validate token
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Token ist erforderlich' },
+        { status: 401 },
+      );
+    }
+
+    // Find user by token
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.token, token))
+      .limit(1);
+
+    if (user.length === 0) {
       return NextResponse.json(
         { error: 'Nicht authentifiziert' },
         { status: 401 },
       );
     }
-
-    const body = await request.json();
-    const { themaId, title, content } = body;
 
     // Validate input
     if (!themaId || !title || !content) {
@@ -60,7 +74,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = parseInt(session.user.id, 10);
+    const userId = user[0].id;
 
     // Create the contribution
     const contributionId = await createContribution(
