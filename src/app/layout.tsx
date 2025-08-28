@@ -6,7 +6,7 @@ import { StickyNavbar } from '../components/NavBar';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from '@material-tailwind/react';
 import './globals.css';
-import { AuthProvider } from '../lib/context/AuthContext';
+import { SupabaseAuthProvider } from '../lib/context/AuthContext';
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -19,14 +19,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body
         className={`relative w-full flex flex-col bg-white antialiased ${DesirePro.className}`}
       >
-        <AuthProvider>
+        <SupabaseAuthProvider>
           <ThemeProvider>
             <StickyNavbar />
             <main className="relative w-full">
               <SessionProvider>{children}</SessionProvider>
             </main>
           </ThemeProvider>
-        </AuthProvider>
+        </SupabaseAuthProvider>
       </body>
     </html>
   );

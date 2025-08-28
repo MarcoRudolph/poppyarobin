@@ -17,18 +17,23 @@ import {
 import { FcLike, FcLikePlaceholder } from 'react-icons/fc';
 import { IoArrowBack } from 'react-icons/io5';
 import { FaComment, FaHeart } from 'react-icons/fa';
-import { useAuthContext } from '../lib/context/AuthContext';
+import { useSupabaseAuth } from '../lib/context/AuthContext';
 
 interface VorschlagDetailProps {
   vorschlag: VorschlagType;
-  onBack: () => void;
+  onBack?: (updatedVorschlag?: { id: number; likes: number }) => void;
+  onLikeUpdate?: (updatedVorschlag: { id: number; likes: number }) => void;
+  showBackButton?: boolean;
+  // onClose?: (updatedVorschlag?: { id: number; likes: number }) => void; // REMOVE this prop
 }
 
 const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
   vorschlag,
   onBack,
+  onLikeUpdate,
+  showBackButton = true,
 }) => {
-  const { user, isAuthenticated } = useAuthContext();
+  const { user, isAuthenticated } = useSupabaseAuth();
   const [comments, setComments] = useState<CommentType[]>([]);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(vorschlag.likes);
@@ -40,6 +45,22 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
 
   const COMMENTS_PER_PAGE = 20;
   const INITIAL_COMMENTS = 3;
+
+  // Helper function to get token from localStorage
+  const getToken = () => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('magiclink_token');
+    }
+    return null;
+  };
+
+  // Helper function to get user name from localStorage
+  const getUserName = () => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('magiclink_email') || 'Anonymous';
+    }
+    return 'Anonymous';
+  };
 
   useEffect(() => {
     loadComments();
@@ -58,18 +79,38 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
   };
 
   const checkUserLikeStatus = async () => {
-    if (user?.token) {
-      const isLiked = await checkIfUserLikedWithSession(
-        user.token,
-        user.name || 'Anonymous',
-        vorschlag.id,
-      );
-      setLiked(isLiked);
+    try {
+      if (user?.id) {
+        // Google OAuth user - use Supabase user ID and email
+        const isLiked = await checkIfUserLikedWithSession(
+          user.id,
+          user.email || 'Anonymous',
+          vorschlag.id,
+        );
+        setLiked(isLiked);
+      } else {
+        // Magic Link user - use token from localStorage
+        const token = getToken();
+        if (token) {
+          const isLiked = await checkIfUserLikedWithSession(
+            token,
+            getUserName(),
+            vorschlag.id,
+          );
+          setLiked(isLiked);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking user like status:', error);
     }
   };
 
   const handleVorschlagLike = async () => {
-    if (!isAuthenticated || !user?.token) {
+    // Check if user is authenticated via either method
+    const hasMagicLinkToken = getToken();
+    const hasGoogleAuth = user?.id;
+
+    if (!hasMagicLinkToken && !hasGoogleAuth) {
       alert('Bitte logge dich ein, um zu liken.');
       return;
     }
@@ -83,30 +124,66 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
 
     try {
       if (liked) {
-        await removeLikeWithSession(
-          user.token,
-          user.name || 'Anonymous',
-          vorschlag.id,
-        );
+        // Remove like
+        if (user?.id) {
+          // Google OAuth user - use Supabase user ID and email
+          await removeLikeWithSession(
+            user.id,
+            user.email || 'Anonymous',
+            vorschlag.id,
+          );
+        } else {
+          // Magic Link user - use token from localStorage
+          const token = getToken();
+          if (!token) {
+            throw new Error('Kein gültiger Token gefunden');
+          }
+          await removeLikeWithSession(token, getUserName(), vorschlag.id);
+        }
+
         setLiked(false);
-        setLikeCount((prev) => prev - 1);
+        const newLikeCount = likeCount - 1;
+        setLikeCount(newLikeCount);
+
+        // Notify parent component about the updated like count
+        if (onLikeUpdate) {
+          onLikeUpdate({ id: vorschlag.id, likes: newLikeCount });
+        }
       } else {
-        await addLikeWithSession(
-          user.token,
-          user.name || 'Anonymous',
-          vorschlag.id,
-        );
+        // Add like
+        if (user?.id) {
+          // Google OAuth user - use Supabase user ID and email
+          await addLikeWithSession(
+            user.id,
+            user.email || 'Anonymous',
+            vorschlag.id,
+          );
+        } else {
+          // Magic Link user - use token from localStorage
+          const token = getToken();
+          if (!token) {
+            throw new Error('Kein gültiger Token gefunden');
+          }
+          await addLikeWithSession(token, getUserName(), vorschlag.id);
+        }
+
         setLiked(true);
-        setLikeCount((prev) => prev + 1);
+        const newLikeCount = likeCount + 1;
+        setLikeCount(newLikeCount);
 
         // Prüfe Like-Limit (4x pro Benutzer) - use the database user ID
-        const likeCount = await getCurrentLikeCount(
-          user.id, // This should be the database user ID
+        const currentLikeCount = await getCurrentLikeCount(
+          parseInt(user?.id || '0', 10),
           vorschlag.id,
         );
-        if (likeCount >= 4) {
+        if (currentLikeCount >= 4) {
           setLikeLimitReached(true);
           setTimeout(() => setLikeLimitReached(false), 30 * 60 * 1000); // 30 Minuten
+        }
+
+        // Notify parent component about the updated like count
+        if (onLikeUpdate) {
+          onLikeUpdate({ id: vorschlag.id, likes: newLikeCount });
         }
       }
     } catch (error) {
@@ -121,7 +198,11 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
   };
 
   const handleCommentLike = async (commentId: number) => {
-    if (!isAuthenticated || !user?.token) {
+    // Check if user is authenticated via either method
+    const hasMagicLinkToken = getToken();
+    const hasGoogleAuth = user?.id;
+
+    if (!hasMagicLinkToken && !hasGoogleAuth) {
       alert('Bitte logge dich ein, um zu liken.');
       return;
     }
@@ -131,27 +212,57 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
     if (!comment) return;
 
     try {
-      const isLiked = await checkIfUserLikedCommentWithSession(
-        user.token,
-        user.name || 'Anonymous',
-        commentId,
-      );
+      let isLiked: boolean;
 
-      if (isLiked) {
-        await removeLikeFromCommentWithSession(
-          user.token,
-          user.name || 'Anonymous',
+      // Check if we have a Supabase user (Google OAuth) or need to use Magic Link token
+      if (user?.id) {
+        // Google OAuth user - use Supabase user ID and email
+        isLiked = await checkIfUserLikedCommentWithSession(
+          user.id,
+          user.email || 'Anonymous',
           commentId,
         );
+      } else {
+        // Magic Link user - use token from localStorage
+        const token = getToken();
+        if (!token) {
+          throw new Error('Kein gültiger Token gefunden');
+        }
+        isLiked = await checkIfUserLikedCommentWithSession(
+          token,
+          getUserName(),
+          commentId,
+        );
+      }
+
+      if (isLiked) {
+        // Remove like
+        if (user?.id) {
+          await removeLikeFromCommentWithSession(
+            user.id,
+            user.email || 'Anonymous',
+            commentId,
+          );
+        } else {
+          const token = getToken();
+          if (token) {
+            await removeLikeFromCommentWithSession(
+              token,
+              getUserName(),
+              commentId,
+            );
+          }
+        }
+
         setComments((prev) =>
           prev.map((c) =>
             c.id === commentId ? { ...c, likes: c.likes - 1 } : c,
           ),
         );
       } else {
-        // Prüfe Like-Limit für Kommentare (4x pro Benutzer) - use the database user ID
+        // Add like - check like limit first
         const currentLikeCount = await getCurrentCommentLikeCount(
-          user.id, // This should be the database user ID
+          parseInt(user?.id || '0', 10),
           commentId,
         );
         if (currentLikeCount >= 4) {
@@ -161,11 +272,20 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
           return;
         }
 
-        await addLikeToCommentWithSession(
-          user.token,
-          user.name || 'Anonymous',
-          commentId,
-        );
+        // Add like
+        if (user?.id) {
+          await addLikeToCommentWithSession(
+            user.id,
+            user.email || 'Anonymous',
+            commentId,
+          );
+        } else {
+          const token = getToken();
+          if (token) {
+            await addLikeToCommentWithSession(token, getUserName(), commentId);
+          }
+        }
+
         setComments((prev) =>
           prev.map((c) =>
             c.id === commentId ? { ...c, likes: c.likes + 1 } : c,
@@ -185,16 +305,42 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isAuthenticated || !user?.token || !newComment.trim()) return;
+
+    // Check if user is authenticated via either method
+    const hasMagicLinkToken = getToken();
+    const hasGoogleAuth = user?.id;
+
+    if (!hasMagicLinkToken && !hasGoogleAuth) {
+      alert('Bitte logge dich ein, um zu kommentieren.');
+      return;
+    }
+
+    if (!newComment.trim()) return;
 
     setIsSubmitting(true);
     try {
-      await createCommentWithSession(
-        vorschlag.id,
-        newComment,
-        user.token,
-        user.name || 'Anonymous',
-      );
+      // Check if we have a Supabase user (Google OAuth) or need to use Magic Link token
+      if (user?.id) {
+        // Google OAuth user - use Supabase user ID and email
+        await createCommentWithSession(
+          vorschlag.id,
+          newComment,
+          user.id, // Use Supabase user ID as token
+          user.email || 'Anonymous',
+        );
+      } else {
+        // Magic Link user - use token from localStorage
+        const token = getToken();
+        if (!token) {
+          throw new Error('Kein gültiger Token gefunden');
+        }
+        await createCommentWithSession(
+          vorschlag.id,
+          newComment,
+          token,
+          getUserName(),
+        );
+      }
 
       setNewComment('');
       await loadComments(); // Kommentare neu laden
@@ -221,26 +367,28 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
   const totalPages = Math.ceil(comments.length / COMMENTS_PER_PAGE);
 
   return (
-    <div className="w-3/5 mx-auto">
-      {/* Zurück-Button */}
-      <button
-        onClick={onBack}
-        className={`
-          flex items-center space-x-2 mb-6
-          bg-halftone
-          text-white
-          py-3 px-4
-          rounded-lg
-          font-medium
-          hover:opacity-90
-          transition-all duration-200 transform hover:scale-105
-          shadow-md
-          text-xl
-        `}
-      >
-        <IoArrowBack className="text-xl" />
-        <span>Zurück zu den Themen</span>
-      </button>
+    <div className="w-full max-w-2xl mx-auto">
+      {/* Zurück-Button (optional) */}
+      {showBackButton && onBack && (
+        <button
+          onClick={() => onBack({ id: vorschlag.id, likes: likeCount })}
+          className={`
+            flex items-center space-x-2 mb-6
+            bg-halftone
+            text-white
+            py-3 px-4
+            rounded-lg
+            font-medium
+            hover:opacity-90
+            transition-all duration-200 transform hover:scale-105
+            shadow-md
+            text-xl
+          `}
+        >
+          <IoArrowBack className="text-xl" />
+          <span>Zurück zu den Themen</span>
+        </button>
+      )}
 
       {/* Vorschlag-Details */}
       <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
@@ -279,10 +427,38 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
 
       {/* Kommentare */}
       <div className="bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Kommentare</h2>
+        <h2 className="text-2xl font-bold mb-4">Kommentare</h2>
+        {/* Kommentar-Liste, scrollbar */}
+        {comments.length > 0 ? (
+          <div className="space-y-4 mb-4 max-h-60 overflow-y-auto pr-2">
+            {displayedComments.map((comment) => (
+              <div key={comment.id} className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <span className="font-semibold text-gray-800 mr-2">
+                    {comment.userName}
+                  </span>
+                  <button
+                    className="ml-auto text-pink-500 hover:text-pink-700"
+                    onClick={() => handleCommentLike(comment.id)}
+                  >
+                    <FaHeart
+                      className={`inline-block mr-1 ${
+                        comment.likes > 0 ? 'text-pink-500' : 'text-gray-400'
+                      }`}
+                    />
+                    {comment.likes}
+                  </button>
+                </div>
+                <p className="text-gray-700">{comment.text}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 mb-4">Noch keine Kommentare.</p>
+        )}
 
         {/* Kommentar-Formular */}
-        {isAuthenticated && (
+        {(getToken() || user?.id) && (
           <form onSubmit={handleSubmitComment} className="mb-8">
             <textarea
               value={newComment}
@@ -306,34 +482,6 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
             </div>
           </form>
         )}
-
-        {/* Kommentare-Liste */}
-        <div className="space-y-4">
-          {displayedComments.map((comment) => (
-            <div
-              key={comment.id}
-              className="border-l-4 border-pink-400 bg-gray-50 rounded-lg p-4"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <span className="font-semibold text-gray-800">
-                  {comment.userName || 'Anonym'}
-                </span>
-                <button
-                  onClick={() => handleCommentLike(comment.id)}
-                  className="flex items-center space-x-1 text-gray-600 hover:text-red-500 transition-colors"
-                >
-                  <FaHeart
-                    className={
-                      comment.likes > 0 ? 'text-red-500' : 'text-gray-400'
-                    }
-                  />
-                  <span className="text-sm">{comment.likes}</span>
-                </button>
-              </div>
-              <p className="text-gray-700">{comment.text}</p>
-            </div>
-          ))}
-        </div>
 
         {/* Pagination */}
         {comments.length > INITIAL_COMMENTS && (

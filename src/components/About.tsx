@@ -6,7 +6,7 @@ import { OpenSans, DesirePro, Dancing } from '../lib/fonts';
 const About = () => {
   return (
     <div className="mx-auto flex w-full flex-col items-start justify-center sm:flex-row lg:mt-10 lg:w-1/2">
-      <div className="mx-auto mt-10 flex h-2/3 w-2/3 items-center overflow-hidden shadow-[10px_10px_15px_rgba(0,0,0,0.3)] md:p-4 lg:mr-10 lg:mt-0 lg:h-80 lg:w-80 lg:p-0">
+      <div className="mx-auto mt-20 flex h-2/3 w-2/3 items-center overflow-hidden shadow-[10px_10px_15px_rgba(0,0,0,0.3)] md:p-4 lg:mr-10 lg:h-80 lg:w-80 lg:p-0">
         <Image
           src="/images/poppybio1.jpg"
           alt="Poppy A. Robin - Katja und Gesa"

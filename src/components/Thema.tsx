@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Vorschlag from './Vorschlag';
+import VorschlagDetail from './VorschlagDetail';
 import Comments from './Comments';
 import { ThemaType, VorschlagType } from '../lib/types';
 import ContributionForm from './ContributionForm';
@@ -18,21 +19,49 @@ const Thema: React.FC<ThemaProps> = ({ thema, onContributionAdded }) => {
   const [selectedVorschlag, setSelectedVorschlag] =
     useState<VorschlagType | null>(null);
   const [showContributionForm, setShowContributionForm] = useState(false);
+  const [sortedVorschlaege, setSortedVorschlaege] = useState<VorschlagType[]>(
+    [],
+  );
+
+  // Sort vorschlaege by likes count (highest first)
+  useEffect(() => {
+    const sorted = [...thema.vorschlaege].sort((a, b) => b.likes - a.likes);
+    setSortedVorschlaege(sorted);
+  }, [thema.vorschlaege]);
 
   const handleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
   const showMore = () => {
-    setDisplayCount(thema.vorschlaege.length);
+    setDisplayCount(sortedVorschlaege.length);
   };
 
   const handleVorschlagClick = (vorschlag: VorschlagType) => {
     setSelectedVorschlag(vorschlag);
   };
 
-  const handleBack = () => {
+  const handleBack = (updatedVorschlag?: { id: number; likes: number }) => {
     setSelectedVorschlag(null);
+  };
+
+  const handleLikeUpdate = (updatedVorschlag: {
+    id: number;
+    likes: number;
+  }) => {
+    // Update the like count in the sorted list and re-sort
+    setSortedVorschlaege((prev) => {
+      const updated = prev.map((v) =>
+        v.id === updatedVorschlag.id
+          ? { ...v, likes: updatedVorschlag.likes }
+          : v,
+      );
+      return updated.sort((a, b) => b.likes - a.likes);
+    });
+  };
+
+  const handleBackButtonClick = () => {
+    handleBack();
   };
 
   const handleAddContribution = () => {
@@ -52,7 +81,7 @@ const Thema: React.FC<ThemaProps> = ({ thema, onContributionAdded }) => {
   };
 
   const displayedVorschlaege = isExpanded
-    ? thema.vorschlaege.slice(0, displayCount)
+    ? sortedVorschlaege.slice(0, displayCount)
     : [];
 
   return (
@@ -100,7 +129,7 @@ const Thema: React.FC<ThemaProps> = ({ thema, onContributionAdded }) => {
                 onClick={handleVorschlagClick}
               />
             ))}
-            {displayCount < thema.vorschlaege.length && (
+            {displayCount < sortedVorschlaege.length && (
               <button
                 className="mt-2 text-blue-500 hover:underline"
                 onClick={showMore}
@@ -120,15 +149,20 @@ const Thema: React.FC<ThemaProps> = ({ thema, onContributionAdded }) => {
             transition={{ duration: 0.3 }}
             className="fixed inset-0 bg-white z-50 p-6 shadow-lg overflow-auto"
           >
-            <button onClick={handleBack} className="text-2xl mb-4">
-              ← Zurück
+            {/* Custom back button */}
+            <button
+              onClick={handleBackButtonClick}
+              className="text-2xl mb-4 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              ← Zurück zu den Themen
             </button>
-            <h2 className="text-3xl font-bold">
-              {selectedVorschlag.ueberschrift}
-            </h2>
-            <p className="mt-4 text-gray-700">{selectedVorschlag.text}</p>
-            <Vorschlag vorschlag={selectedVorschlag} isDetailedView={true} />
-            <Comments vorschlagId={selectedVorschlag.id} />
+
+            <VorschlagDetail
+              vorschlag={selectedVorschlag}
+              onBack={handleBack}
+              onLikeUpdate={handleLikeUpdate}
+              showBackButton={false}
+            />
           </motion.div>
         )}
       </div>

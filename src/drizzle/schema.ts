@@ -38,6 +38,12 @@ export const vorschlaege = pgTable('vorschlaege', {
   text: text('text').notNull(),
   likes: integer('likes').default(0).notNull(),
   comments: integer('comments').default(0).notNull(),
+  userId: integer('user_id')
+    .references(() => users.id)
+    .notNull(),
+  createdAt: timestamp('created_at', { withTimezone: false })
+    .notNull()
+    .defaultNow(),
 });
 
 export const kommentare = pgTable('kommentare', {

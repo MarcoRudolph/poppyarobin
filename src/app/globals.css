@@ -20,15 +20,12 @@
 
 @layer utilities {
   .bg-halftone {
-    background-image: url('/textures/halftone.png'),
-      linear-gradient(
-        to bottom,
-        theme('colors.purple-700'),
-        theme('colors.purple-800')
-      );
-    background-size:
-      64px 64px,
-      cover;
+    background: linear-gradient(
+      to bottom,
+      theme('colors.purple-700'),
+      theme('colors.purple-800')
+    );
+    background-size: cover;
   }
 }
 
@@ -64,4 +61,8 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+}
+
+body {
+  scrollbar-gutter: stable;
 }

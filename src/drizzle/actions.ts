@@ -187,6 +187,7 @@ export async function createContribution(
       text: content,
       likes: 0,
       comments: 0,
+      userId, // Add the missing userId field
     })
     .returning({ id: vorschlaege.id });
 
@@ -248,6 +249,27 @@ export async function getCurrentCommentLikeCount(
       ),
     );
 
+  return result.length;
+}
+
+// Hole die aktuelle Like-Anzahl eines Vorschlags
+export async function getVorschlagLikes(vorschlagId: number): Promise<number> {
+  const result = await db
+    .select({ likes: vorschlaege.likes })
+    .from(vorschlaege)
+    .where(eq(vorschlaege.id, vorschlagId))
+    .limit(1);
+  return result.length > 0 ? result[0].likes : 0;
+}
+
+// Hole die aktuelle Kommentar-Anzahl eines Vorschlags
+export async function getVorschlagCommentsCount(
+  vorschlagId: number,
+): Promise<number> {
+  const result = await db
+    .select()
+    .from(kommentare)
+    .where(eq(kommentare.vorschlagId, vorschlagId));
   return result.length;
 }
 

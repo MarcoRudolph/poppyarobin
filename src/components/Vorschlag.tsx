@@ -3,30 +3,50 @@
 import React, { useState, useEffect } from 'react';
 import { VorschlagType } from '../lib/types';
 import { FcLike, FcLikePlaceholder } from 'react-icons/fc';
-import { useSession } from 'next-auth/react';
-import { checkIfUserLiked, addLike, removeLike } from '../drizzle/actions';
+import { useSupabaseAuth } from '../lib/context/AuthContext';
+import {
+  getVorschlagLikes,
+  getVorschlagCommentsCount,
+  addLikeWithSession,
+  removeLikeWithSession,
+  checkIfUserLikedWithSession,
+} from '../drizzle/actions';
 
 interface VorschlagProps {
   vorschlag: VorschlagType;
   onClick?: (vorschlag: VorschlagType) => void;
   isDetailedView?: boolean;
+  onLike?: () => void; // <-- add this
 }
 
 const Vorschlag: React.FC<VorschlagProps> = ({
   vorschlag,
   onClick,
   isDetailedView = false,
+  onLike,
 }) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(vorschlag.likes);
-  const { data: session } = useSession();
-  const userId = session?.user?.id;
+  const { user } = useSupabaseAuth();
+  const userId = user?.id;
+  const [commentCount, setCommentCount] = useState(vorschlag.comments);
+
+  // Lade initial und bei vorschlag.id-Wechsel die aktuelle Kommentar-Anzahl
+  useEffect(() => {
+    (async () => {
+      const latestComments = await getVorschlagCommentsCount(vorschlag.id);
+      setCommentCount(latestComments);
+    })();
+  }, [vorschlag.id]);
 
   useEffect(() => {
     (async () => {
       if (userId) {
-        const numericUserId = parseInt(userId, 10);
-        const isLiked = await checkIfUserLiked(numericUserId, vorschlag.id);
+        const isLiked = await checkIfUserLikedWithSession(
+          userId,
+          user?.email || 'Anonymous',
+          vorschlag.id,
+        );
         setLiked(isLiked);
       }
     })();
@@ -38,17 +58,25 @@ const Vorschlag: React.FC<VorschlagProps> = ({
       return;
     }
 
-    const numericUserId = parseInt(userId, 10);
-
     if (liked) {
-      await removeLike(numericUserId, vorschlag.id);
+      await removeLikeWithSession(
+        userId,
+        user?.email || 'Anonymous',
+        vorschlag.id,
+      );
       setLiked(false);
-      setLikeCount(likeCount - 1);
     } else {
-      await addLike(numericUserId, vorschlag.id);
+      await addLikeWithSession(
+        userId,
+        user?.email || 'Anonymous',
+        vorschlag.id,
+      );
       setLiked(true);
-      setLikeCount(likeCount + 1);
     }
+    // Nach jedem Like/Unlike aktuelle Like-Anzahl aus DB laden
+    const latestLikes = await getVorschlagLikes(vorschlag.id);
+    setLikeCount(latestLikes);
+    if (onLike) onLike(); // <-- call after updating
   };
 
   if (isDetailedView) {
@@ -66,12 +94,23 @@ const Vorschlag: React.FC<VorschlagProps> = ({
   // List view
   return (
     <div
-      className="border rounded p-2 mb-2 cursor-pointer hover:bg-gray-100"
+      className="relative border rounded p-2 mb-2 cursor-pointer hover:bg-gray-100"
       onClick={() => onClick && onClick(vorschlag)}
     >
-      <h3 className="text-xl font-semibold">{vorschlag.ueberschrift}</h3>
+      {/* Herz-Icon rechts oben */}
+      <button
+        className="absolute top-2 right-2 text-xl z-10 bg-white rounded-full p-1 shadow hover:scale-110 transition"
+        onClick={(e) => {
+          e.stopPropagation();
+          likeVorschlag();
+        }}
+        aria-label={liked ? 'Like entfernen' : 'Liken'}
+      >
+        {liked ? <FcLike /> : <FcLikePlaceholder />}
+      </button>
+      <h3 className="text-xl font-semibold pr-8">{vorschlag.ueberschrift}</h3>
       <p className="text-gray-600">
-        {likeCount} Likes | {vorschlag.comments} Kommentare
+        {likeCount} Likes | {commentCount} Kommentare
       </p>
     </div>
   );

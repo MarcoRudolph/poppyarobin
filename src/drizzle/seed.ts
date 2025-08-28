@@ -77,8 +77,8 @@ async function seed() {
             themaId: themaId,
             ueberschrift: ueberschrift,
             text: text,
-            likes: Math.floor(Math.random() * 100), // Zufällige Likes für Demodaten
-            comments: Math.floor(Math.random() * 20), // Zufällige Kommentare
+            likes: 0, // Set likes to 0 for initial seed
+            comments: 0, // Set comments to 0 for initial seed
           });
           console.log(`- Vorschlag "${ueberschrift}" hinzugefügt.`);
         } else {

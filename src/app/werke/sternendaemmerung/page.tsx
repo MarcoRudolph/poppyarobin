@@ -27,26 +27,31 @@ const Sternen = () => {
   }, []);
 
   return (
-    <div className="flex w-full flex-col items-center justify-center">
-      {/* Display the first image as in About component */}
-      {/* {isMobile ? (
+    <div className="flex w-full flex-col items-center justify-center relative">
+      {/* Spacer für Abstand zur Navbar */}
+      <div className="h-24 w-full" />
+      {/* Hintergrundbild wie bei Dreamer */}
+      {isMobile ? (
         <Image
           src="/images/poppy_sm_bg.jpg"
           alt="Header Image"
           fill
+          priority
           objectFit="cover"
+          className="absolute left-0 top-0 -z-10 w-full h-full object-cover"
         />
       ) : (
         <Image
           src="/images/poppy.jpg"
           alt="Header Image"
           fill
-          style={{ transform: "rotate(90deg)" }}
+          priority
           objectFit="cover"
+          className="absolute left-0 top-0 -z-10 w-full h-full object-cover"
         />
-      )} */}
+      )}
 
-      <div className="z-[10] mt-10 flex w-full flex-col items-center justify-center overflow-hidden lg:max-w-[1200px] lg:flex-row lg:items-start">
+      <div className="z-[10] mt-10 flex w-full flex-col items-center justify-center lg:max-w-[1200px] lg:flex-row lg:items-start">
         <div className="mr-5 lg:flex-shrink-0">
           <Image
             src="/images/covers/Buch1Single.jpg"
@@ -121,7 +126,7 @@ const Sternen = () => {
       {/* Divider */}
       <hr className="my-10 w-full border-gray-500 lg:w-1/2" />
 
-      <div className="z-[10] flex w-full flex-col items-center justify-center overflow-hidden lg:max-w-[1200px] lg:flex-row lg:items-start">
+      <div className="z-[10] flex w-full flex-col items-center justify-center lg:max-w-[1200px] lg:flex-row lg:items-start">
         <div className="mr-5 lg:flex-shrink-0">
           <Image
             src="/images/covers/buch2.jpg"
@@ -209,7 +214,7 @@ const Sternen = () => {
       <hr className="my-10 w-full border-gray-500 lg:w-1/2" />
 
       {/* Third Book */}
-      <div className="z-[10] flex w-full flex-col items-center justify-center overflow-hidden lg:max-w-[1200px] lg:flex-row lg:items-start">
+      <div className="z-[10] flex w-full flex-col items-center justify-center lg:max-w-[1200px] lg:flex-row lg:items-start">
         <div className="mr-5 lg:flex-shrink-0">
           <Image
             src="/images/covers/sternen3cover.jpeg"

@@ -2,31 +2,64 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createContribution } from '../../../drizzle/actions';
 import { db } from '../../../drizzle';
 import { users } from '../../../drizzle/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and, gte } from 'drizzle-orm';
+import { vorschlaege } from '../../../drizzle/schema';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { themaId, title, content, token } = body;
+    const {
+      themaId,
+      title,
+      content,
+      token,
+      userId: googleUserId,
+      userEmail,
+    } = body;
 
-    // Validate token
-    if (!token) {
+    let userId: number;
+
+    // Check if we have Google OAuth user or Magic Link token
+    if (googleUserId && userEmail) {
+      // Google OAuth user - find or create user in our database
+      let user = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, userEmail))
+        .limit(1);
+
+      if (user.length === 0) {
+        // Create new user for Google OAuth
+        const newUser = await db
+          .insert(users)
+          .values({
+            email: userEmail,
+            name: userEmail.split('@')[0], // Use email prefix as name
+            token: googleUserId, // Use Google user ID as token
+          })
+          .returning();
+        userId = newUser[0].id;
+      } else {
+        userId = user[0].id;
+      }
+    } else if (token) {
+      // Magic Link user - find user by token
+      const user = await db
+        .select()
+        .from(users)
+        .where(eq(users.token, token))
+        .limit(1);
+
+      if (user.length === 0) {
+        return NextResponse.json(
+          { error: 'Nicht authentifiziert' },
+          { status: 401 },
+        );
+      }
+      userId = user[0].id;
+    } else {
       return NextResponse.json(
-        { error: 'Token ist erforderlich' },
-        { status: 401 },
-      );
-    }
-
-    // Find user by token
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.token, token))
-      .limit(1);
-
-    if (user.length === 0) {
-      return NextResponse.json(
-        { error: 'Nicht authentifiziert' },
+        { error: 'Authentifizierung erforderlich' },
         { status: 401 },
       );
     }
@@ -74,7 +107,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = user[0].id;
+    // Spam protection: Only 5 Vorschläge per user per day
+    // For now, we'll rely on the client-side protection
+    // TODO: Implement proper server-side date-based spam protection
 
     // Create the contribution
     const contributionId = await createContribution(
