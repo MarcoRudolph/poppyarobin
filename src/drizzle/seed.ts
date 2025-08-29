@@ -15,13 +15,22 @@ import * as path from 'path';
 
 dotenv.config({ path: '.env' });
 
+// Use Supabase connection string if available, fallback to POSTGRES_URL
+const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+
+if (!connectionString) {
+  throw new Error(
+    'DATABASE_URL or POSTGRES_URL environment variable is required',
+  );
+}
+
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
+  connectionString: connectionString,
 });
 
 const db = drizzle(pool);
 
-async function seed() {
+export async function seedDatabase() {
   console.log('Seeding database from Seed.json...');
 
   // Create a default user for seed data
@@ -117,6 +126,11 @@ async function seed() {
   }
 
   console.log('Seeding complete.');
+}
+
+// Keep the original seed function for CLI usage
+async function seed() {
+  await seedDatabase();
   process.exit(0);
 }
 
