@@ -6,6 +6,7 @@ import {
   kommentare,
   userLikes,
   commentLikes,
+  users,
 } from './schema';
 import * as dotenv from 'dotenv';
 import { eq, and } from 'drizzle-orm';
@@ -22,6 +23,30 @@ const db = drizzle(pool);
 
 async function seed() {
   console.log('Seeding database from Seed.json...');
+
+  // Create a default user for seed data
+  let defaultUserId: number;
+  const existingUser = await db
+    .select()
+    .from(users)
+    .where(eq(users.name, 'Seed User'))
+    .limit(1);
+
+  if (existingUser.length > 0) {
+    defaultUserId = existingUser[0].id;
+    console.log('Default user "Seed User" already exists.');
+  } else {
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        name: 'Seed User',
+        email: 'seed@example.com',
+        token: 'seed-token',
+      })
+      .returning();
+    defaultUserId = newUser.id;
+    console.log('Default user "Seed User" created with ID:', defaultUserId);
+  }
 
   // 1. Lese die JSON-Datei
   const seedFilePath = path.join(process.cwd(), 'public', 'Seed.json');
@@ -79,6 +104,7 @@ async function seed() {
             text: text,
             likes: 0, // Set likes to 0 for initial seed
             comments: 0, // Set comments to 0 for initial seed
+            userId: defaultUserId, // Assign the default user ID
           });
           console.log(`- Vorschlag "${ueberschrift}" hinzugefügt.`);
         } else {
@@ -94,7 +120,7 @@ async function seed() {
   process.exit(0);
 }
 
-seed().catch((error) => {
-  console.error('Error during seeding:', error);
-  process.exit(1);
-});
+// seed().catch((error) => {
+//   console.error('Error during seeding:', error);
+//   process.exit(1);
+// });

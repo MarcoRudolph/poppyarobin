@@ -155,7 +155,7 @@ const ContributionForm: React.FC<ContributionFormProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-1 sm:p-2 md:p-4 overflow-hidden"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black bg-opacity-50 p-1 sm:p-2 md:p-4"
           onClick={handleBackdropClick}
         >
           <motion.div
@@ -163,14 +163,14 @@ const ContributionForm: React.FC<ContributionFormProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="bg-white rounded-xl shadow-2xl w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto overflow-x-hidden"
+            className="max-h-[95vh] w-full max-w-sm overflow-y-auto overflow-x-hidden rounded-xl bg-white shadow-2xl sm:max-h-[90vh] sm:max-w-md md:max-w-lg lg:max-w-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between border-b border-gray-200 p-4 sm:p-6">
               <div className="animate-pulse">
-                <div className="h-6 bg-gray-200 rounded w-32 mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-48 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-64"></div>
+                <div className="mb-4 h-6 w-32 rounded bg-gray-200"></div>
+                <div className="mb-2 h-4 w-48 rounded bg-gray-200"></div>
+                <div className="h-4 w-64 rounded bg-gray-200"></div>
               </div>
             </div>
           </motion.div>
@@ -186,7 +186,7 @@ const ContributionForm: React.FC<ContributionFormProps> = ({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-1 sm:p-2 md:p-4 overflow-hidden"
+        className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black bg-opacity-50 p-1 sm:p-2 md:p-4"
         onClick={handleBackdropClick}
       >
         <motion.div
@@ -194,17 +194,17 @@ const ContributionForm: React.FC<ContributionFormProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
-          className="bg-white rounded-xl shadow-2xl w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto overflow-x-hidden"
+          className="max-h-[95vh] w-full max-w-sm overflow-y-auto overflow-x-hidden rounded-xl bg-white shadow-2xl sm:max-h-[90vh] sm:max-w-md md:max-w-lg lg:max-w-2xl"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
-            <h3 className="text-lg sm:text-2xl font-semibold text-gray-800 pr-2">
-              Beitrag zu "{thema.name}" hinzufügen
+          <div className="flex items-center justify-between border-b border-gray-200 p-4 sm:p-6">
+            <h3 className="pr-2 text-lg font-semibold text-gray-800 sm:text-2xl">
+              Beitrag zu &quot;{thema.name}&quot; hinzufügen
             </h3>
             <button
               onClick={onCancel}
-              className="text-gray-500 hover:text-gray-700 text-2xl sm:text-3xl font-light hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors flex-shrink-0"
+              className="flex size-8 shrink-0 items-center justify-center rounded-full text-2xl font-light text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 sm:text-3xl"
               aria-label="Schließen"
             >
               ×
@@ -217,7 +217,7 @@ const ContributionForm: React.FC<ContributionFormProps> = ({
               <div>
                 <label
                   htmlFor="title"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="mb-2 block text-sm font-medium text-gray-700"
                 >
                   Titel deines Beitrags *
                 </label>
@@ -227,11 +227,11 @@ const ContributionForm: React.FC<ContributionFormProps> = ({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="z.B. Meine Idee für Friends to Lovers..."
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all text-base sm:text-lg"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base transition-all focus:border-transparent focus:ring-2 focus:ring-pink-500 sm:px-4 sm:py-3 sm:text-lg"
                   maxLength={100}
                   autoFocus
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="mt-1 text-xs text-gray-500">
                   {title.length}/100 Zeichen
                 </p>
               </div>
@@ -239,7 +239,7 @@ const ContributionForm: React.FC<ContributionFormProps> = ({
               <div>
                 <label
                   htmlFor="content"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="mb-2 block text-sm font-medium text-gray-700"
                 >
                   Dein Beitrag *
                 </label>
@@ -249,17 +249,17 @@ const ContributionForm: React.FC<ContributionFormProps> = ({
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Beschreibe deine Idee, deine Geschichte oder deinen Vorschlag für dieses Thema..."
                   rows={6}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all resize-vertical text-base sm:text-lg"
+                  className="resize-vertical w-full rounded-lg border border-gray-300 px-3 py-2 text-base transition-all focus:border-transparent focus:ring-2 focus:ring-pink-500 sm:px-4 sm:py-3 sm:text-lg"
                   maxLength={1000}
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="mt-1 text-xs text-gray-500">
                   {content.length}/1000 Zeichen
                 </p>
               </div>
 
               {/* Info Box */}
-              <div className="bg-pink-50 border border-pink-200 rounded-lg p-3 sm:p-4">
-                <p className="text-xs sm:text-sm text-pink-800">
+              <div className="rounded-lg border border-pink-200 bg-pink-50 p-3 sm:p-4">
+                <p className="text-xs text-pink-800 sm:text-sm">
                   <strong>Tipp:</strong> Dein Beitrag wird anderen Nutzern
                   angezeigt und kann geliked und kommentiert werden. Die Likes
                   entscheiden über die finale Auswahl für das Buch!
@@ -267,18 +267,18 @@ const ContributionForm: React.FC<ContributionFormProps> = ({
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-4 border-t border-gray-200">
+              <div className="flex flex-col items-stretch justify-end space-y-3 border-t border-gray-200 pt-4 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50 sm:w-auto sm:px-6 sm:py-3"
                 >
                   Abbrechen
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting || !title.trim() || !content.trim()}
-                  className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-pink-500 text-white rounded-lg hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
+                  className="w-full rounded-lg bg-pink-500 px-4 py-2 font-medium text-white transition-colors hover:bg-pink-600 disabled:cursor-not-allowed disabled:bg-gray-400 sm:w-auto sm:px-6 sm:py-3"
                 >
                   {isSubmitting ? 'Wird gespeichert...' : 'Beitrag speichern'}
                 </button>

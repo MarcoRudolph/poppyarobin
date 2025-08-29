@@ -3,7 +3,6 @@
 import React from 'react';
 import { OpenSans, DesirePro, Dancing } from '../lib/fonts';
 import { StickyNavbar } from '../components/NavBar';
-import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from '@material-tailwind/react';
 import './globals.css';
 import { SupabaseAuthProvider } from '../lib/context/AuthContext';
@@ -17,14 +16,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="de" suppressHydrationWarning>
       <head />
       <body
-        className={`relative w-full flex flex-col bg-white antialiased ${DesirePro.className}`}
+        className={`relative flex w-full flex-col bg-white antialiased ${DesirePro.className}`}
       >
         <SupabaseAuthProvider>
           <ThemeProvider>
             <StickyNavbar />
-            <main className="relative w-full">
-              <SessionProvider>{children}</SessionProvider>
-            </main>
+            <main className="relative w-full">{children}</main>
           </ThemeProvider>
         </SupabaseAuthProvider>
       </body>

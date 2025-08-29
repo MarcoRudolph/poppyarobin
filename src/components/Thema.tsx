@@ -6,10 +6,14 @@ import Vorschlag from './Vorschlag';
 import VorschlagDetail from './VorschlagDetail';
 import Comments from './Comments';
 import { ThemaType, VorschlagType } from '../lib/types';
+import {
+  ThemaWithVorschlaegeWithUser,
+  VorschlagWithUser,
+} from '../drizzle/schema';
 import ContributionForm from './ContributionForm';
 
 interface ThemaProps {
-  thema: ThemaType;
+  thema: ThemaWithVorschlaegeWithUser;
   onContributionAdded?: () => void;
 }
 
