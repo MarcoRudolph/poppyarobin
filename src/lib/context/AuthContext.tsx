@@ -10,23 +10,29 @@ import React, {
 import {
   createClient,
   SupabaseClient,
-  Session,
-  User,
+  User as SupabaseUserType,
 } from '@supabase/supabase-js';
 import { SupabaseUser } from '../types';
 import { useHydration } from '../../hooks/useHydration';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Only create Supabase client in the browser
+let supabase: SupabaseClient | null = null;
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    storage: typeof window !== 'undefined' ? localStorage : undefined,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-});
+if (typeof window !== 'undefined') {
+  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        storage: localStorage,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+      },
+    });
+  }
+}
 
 interface SupabaseAuthContextType {
   user: SupabaseUser | null;
@@ -49,6 +55,8 @@ export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = ({
   const isHydrated = useHydration();
 
   useEffect(() => {
+    if (!supabase) return;
+
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (session?.user) {
@@ -74,7 +82,8 @@ export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const signInWithMagicLink = async (email: string) => {
-    if (!isHydrated) return { error: new Error('Not hydrated yet') };
+    if (!isHydrated || !supabase)
+      return { error: new Error('Not hydrated yet or Supabase not available') };
 
     setIsLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
@@ -90,7 +99,7 @@ export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const signInWithGoogle = async () => {
-    if (!isHydrated) return;
+    if (!isHydrated || !supabase) return;
 
     setIsLoading(true);
 
@@ -110,7 +119,10 @@ export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = ({
 
       console.log('Starting Google OAuth with redirect:', redirectUrl);
       console.log('Current path:', currentPath);
-      console.log('Current Supabase URL:', SUPABASE_URL);
+      console.log(
+        'Current Supabase URL:',
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+      );
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -121,13 +133,13 @@ export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = ({
 
       if (error) {
         console.error('Google OAuth error:', error);
-        throw error;
+        setIsLoading(false);
+        return;
       }
 
-      console.log('Google OAuth response:', data);
-
-      // If we get here, the OAuth flow should have started
-      // The user should be redirected to Google
+      if (data.url) {
+        window.location.href = data.url;
+      }
     } catch (error) {
       console.error('Failed to start Google OAuth:', error);
     } finally {
@@ -136,6 +148,8 @@ export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const signOut = async () => {
+    if (!supabase) return;
+
     setIsLoading(true);
     await supabase.auth.signOut();
     setUser(null);
