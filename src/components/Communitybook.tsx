@@ -6,7 +6,7 @@ import '../app/globals.css';
 import { v4 as uuidv4 } from 'uuid';
 import {
   fetchThemenList,
-  getVorschlaegeByThema,
+  getVorschlaegeByThemaWithUser,
   ensureUserExists,
   getVorschlagLikes,
 } from '../drizzle/actions';
@@ -18,9 +18,11 @@ import VorschlagDetail from './VorschlagDetail';
 import { useSupabaseAuth } from '../lib/context/AuthContext';
 import Modal from './common/Modal';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { useHydration } from '../hooks/useHydration';
+import { ThemaWithVorschlaegeWithUser } from '../drizzle/schema';
 
 interface CommunitybookProps {
-  themenList: ThemaType[];
+  themenList: ThemaWithVorschlaegeWithUser[];
 }
 
 const MAGIC_LINK_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 Tage in ms
@@ -34,15 +36,18 @@ const Communitybook: React.FC<CommunitybookProps> = ({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [tokenExpired, setTokenExpired] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [themenList, setThemenList] = useState<ThemaType[]>(initialThemenList);
+  const [themenList, setThemenList] =
+    useState<ThemaWithVorschlaegeWithUser[]>(initialThemenList);
   const [showContributionForm, setShowContributionForm] = useState(false);
-  const [selectedThema, setSelectedThema] = useState<ThemaType | null>(null);
+  const [selectedThema, setSelectedThema] =
+    useState<ThemaWithVorschlaegeWithUser | null>(null);
   const [expandedThema, setExpandedThema] = useState<number | null>(null);
   const [selectedVorschlag, setSelectedVorschlag] =
     useState<VorschlagType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [name, setName] = useState('');
   const [userName, setUserName] = useState<string | null>(null);
+  const isHydrated = useHydration();
 
   const {
     signInWithGoogle,
@@ -109,7 +114,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
       const themenList = await fetchThemenList();
       const themenWithVorschlaege = await Promise.all(
         themenList.map(async (thema) => {
-          const vorschlaege = await getVorschlaegeByThema(thema.id);
+          const vorschlaege = await getVorschlaegeByThemaWithUser(thema.id);
           return { ...thema, vorschlaege };
         }),
       );
@@ -119,7 +124,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
     }
   };
 
-  const handleAddContribution = (thema: ThemaType) => {
+  const handleAddContribution = (thema: ThemaWithVorschlaegeWithUser) => {
     setSelectedThema(thema);
     setShowContributionForm(true);
   };
@@ -135,10 +140,13 @@ const Communitybook: React.FC<CommunitybookProps> = ({
     setSelectedThema(null);
   };
 
-  const handleVorschlagClick = (vorschlag: VorschlagType) => {
+  const handleVorschlagClick = (
+    vorschlag: VorschlagType & { userName?: string | null },
+  ) => {
     setSelectedVorschlag(vorschlag);
     setIsModalOpen(true);
   };
+
   // Helper to update a Vorschlag's like count in the themenList state
   const updateVorschlagLikeCount = (
     vorschlagId: number,
@@ -165,7 +173,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
       const latestLikes = await getVorschlagLikes(selectedVorschlag.id);
       updateVorschlagLikeCount(selectedVorschlag.id, latestLikes);
     }
-    refreshData();
+    // Don't call refreshData here as it will override the like count update
   };
 
   // Modified handleBackToThemes to always fetch latest like count before updating state
@@ -179,7 +187,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
       const latestLikes = await getVorschlagLikes(selectedVorschlag.id);
       updateVorschlagLikeCount(selectedVorschlag.id, latestLikes);
     }
-    refreshData();
+    // Don't call refreshData here as it will override the like count update
   };
 
   const toggleThemaExpansion = (themaId: number) => {
@@ -249,6 +257,58 @@ const Communitybook: React.FC<CommunitybookProps> = ({
       setIsLoading(false);
     }
   };
+
+  // Don't render authentication-dependent content until hydration is complete
+  if (!isHydrated) {
+    return (
+      <div
+        className={`relative min-h-screen bg-gradient-to-b from-white to-gray-50 ${OpenSans.className}`}
+      >
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-64 h-64 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-pink-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        </div>
+
+        {/* Main content */}
+        <div className="relative flex flex-col items-center justify-center p-4">
+          {/* Header Section - immer sichtbar */}
+          <div className="flex flex-col md:flex-row items-center w-full mt-5 p-2 rounded-lg">
+            <div className="w-4/5 md:w-3/5 mx-auto mt-6 border-blue-gray-400 border-b-2 pb-8">
+              <div
+                className={`flex flex-col items-start ${DesirePro.className}`}
+              >
+                <h2 className="text-6xl md:text-9xl font-semibold text-gray-800 leading-none">
+                  Eure Ideen,
+                </h2>
+                <h2 className="text-6xl md:text-9xl font-semibold text-gray-800 leading-none">
+                  eure Geschichte
+                </h2>
+              </div>
+              <p
+                className={`text-2xl text-gray-700 mt-8 font-sans leading-relaxed italic ${OpenSans.className}`}
+              >
+                Wir schreiben ein Buch basierend auf euren Themenvorschlägen,
+                Kommentaren und Likes, wobei die Likes die endgültige Auswahl
+                bestimmen.
+              </p>
+            </div>
+          </div>
+
+          {/* Loading state for authentication */}
+          <div className="flex flex-col items-center mt-6">
+            <div className="bg-white/90 rounded-xl shadow-xl p-8 w-full max-w-xl flex flex-col items-center">
+              <div className="animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-48 mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -398,6 +458,12 @@ const Communitybook: React.FC<CommunitybookProps> = ({
               vorschlag={selectedVorschlag}
               showBackButton={true}
               onBack={handleBackToThemes}
+              onLikeUpdate={(updatedVorschlag) =>
+                updateVorschlagLikeCount(
+                  updatedVorschlag.id,
+                  updatedVorschlag.likes,
+                )
+              }
             />
           )}
         </Modal>
@@ -556,6 +622,12 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                                     vorschlag={vorschlag}
                                     onClick={handleVorschlagClick}
                                     onLike={refreshData}
+                                    onLikeUpdate={(updatedVorschlag) =>
+                                      updateVorschlagLikeCount(
+                                        updatedVorschlag.id,
+                                        updatedVorschlag.likes,
+                                      )
+                                    }
                                   />
                                 ))}
                             </div>

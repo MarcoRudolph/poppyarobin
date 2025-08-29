@@ -18,23 +18,27 @@ import { OpenSans, DesirePro } from '../lib/fonts';
 import { User } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useSupabaseAuth } from '../lib/context/AuthContext';
+import { useHydration } from '../hooks/useHydration';
 
 export function StickyNavbar() {
   const [openNav, setOpenNav] = React.useState(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const pathname = usePathname();
+  const isHydrated = useHydration();
 
-  const { user: supabaseUser, isAuthenticated: supabaseIsAuthenticated } =
-    useSupabaseAuth();
+  const {
+    user: supabaseUser,
+    isAuthenticated: supabaseIsAuthenticated,
+    signOut: supabaseSignOut,
+  } = useSupabaseAuth();
 
   // Check authentication on every route change and on storage event
   React.useEffect(() => {
+    if (!isHydrated) return;
+
     const checkAuthentication = () => {
       // Check Magic Link token
-      const magicLinkToken =
-        typeof window !== 'undefined'
-          ? localStorage.getItem('magiclink_token')
-          : null;
+      const magicLinkToken = localStorage.getItem('magiclink_token');
 
       // Check Google OAuth
       const hasGoogleAuth = supabaseUser && supabaseIsAuthenticated;
@@ -47,23 +51,61 @@ export function StickyNavbar() {
     checkAuthentication();
     window.addEventListener('storage', checkAuthentication);
     return () => window.removeEventListener('storage', checkAuthentication);
-  }, [pathname, supabaseUser, supabaseIsAuthenticated]);
+  }, [pathname, supabaseUser, supabaseIsAuthenticated, isHydrated]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('magiclink_email');
-    localStorage.removeItem('magiclink_token');
-    localStorage.removeItem('magiclink_timestamp');
-    window.location.reload();
+  const handleLogout = async () => {
+    if (!isHydrated) return;
+
+    try {
+      // Sign out from Supabase if authenticated via Google OAuth
+      if (supabaseUser && supabaseIsAuthenticated) {
+        await supabaseSignOut();
+      }
+
+      // Clear Magic Link data
+      localStorage.removeItem('magiclink_email');
+      localStorage.removeItem('magiclink_token');
+      localStorage.removeItem('magiclink_timestamp');
+
+      // Force page reload to clear all states
+      window.location.reload();
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Even if there's an error, clear local storage and reload
+      localStorage.clear();
+      window.location.reload();
+    }
   };
 
   React.useEffect(() => {
+    if (!isHydrated) return;
+
     window.addEventListener(
       'resize',
       () => window.innerWidth >= 960 && setOpenNav(false),
     );
-  }, []);
+  }, [isHydrated]);
 
   const textStyle = `flex items-center text-4xl ${DesirePro.className} text-black`;
+
+  // Don't render authentication-dependent content until hydration is complete
+  if (!isHydrated) {
+    return (
+      <Navbar className="sticky top-0 z-10 h-max max-w-full rounded-none py-2 px-4 lg:px-8 lg:py-4">
+        <div className="flex items-center justify-between text-blue-gray-900">
+          <Typography
+            as="a"
+            href="#"
+            className="mr-4 cursor-pointer py-1.5 font-medium"
+          >
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded w-32"></div>
+            </div>
+          </Typography>
+        </div>
+      </Navbar>
+    );
+  }
 
   const navList = (
     <ul className="mb-4 mt-2 flex flex-col gap-6  lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-20">

@@ -14,6 +14,7 @@ import {
   User,
 } from '@supabase/supabase-js';
 import { SupabaseUser } from '../types';
+import { useHydration } from '../../hooks/useHydration';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -45,6 +46,7 @@ export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const isHydrated = useHydration();
 
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange(
@@ -72,11 +74,13 @@ export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const signInWithMagicLink = async (email: string) => {
+    if (!isHydrated) return { error: new Error('Not hydrated yet') };
+
     setIsLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: window.location.origin + '/communitybook',
+        emailRedirectTo: 'https://poppyarobin.de/communitybook',
         shouldCreateUser: true,
         // Magic link expiry is set in Supabase dashboard (default 1 week)
       },
@@ -86,16 +90,26 @@ export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const signInWithGoogle = async () => {
+    if (!isHydrated) return;
+
     setIsLoading(true);
 
     try {
-      // Determine redirect URL based on current location
-      const isLocalhost = window.location.hostname.includes('localhost');
-      const redirectUrl = isLocalhost
-        ? 'http://localhost:3000/communitybook'
-        : 'https://poppyarobin.de/communitybook';
+      // Get the current path to redirect back to the same page
+      const currentPath =
+        typeof window !== 'undefined'
+          ? window.location.pathname
+          : '/communitybook';
+
+      // Use environment variable for local development, otherwise use production domain
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+        ? process.env.NEXT_PUBLIC_BASE_URL
+        : 'https://poppyarobin.de';
+
+      const redirectUrl = `${baseUrl}${currentPath}`;
 
       console.log('Starting Google OAuth with redirect:', redirectUrl);
+      console.log('Current path:', currentPath);
       console.log('Current Supabase URL:', SUPABASE_URL);
 
       const { data, error } = await supabase.auth.signInWithOAuth({

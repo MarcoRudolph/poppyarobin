@@ -14,16 +14,17 @@ import {
 
 const SettingsPage: React.FC = () => {
   const router = useRouter();
-  const { user: supabaseUser, isAuthenticated: supabaseIsAuthenticated } =
-    useSupabaseAuth();
+  const {
+    user: supabaseUser,
+    isAuthenticated: supabaseIsAuthenticated,
+    signOut: supabaseSignOut,
+  } = useSupabaseAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleteType, setDeleteType] = useState<
-    'contributions' | 'likes' | 'account' | null
-  >(null);
+  const [deleteType, setDeleteType] = useState<'account' | null>(null);
 
   useEffect(() => {
     const checkAuthentication = () => {
@@ -74,16 +75,6 @@ const SettingsPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [supabaseUser, supabaseIsAuthenticated, router, isAuthenticated]);
 
-  const handleDeleteContributions = async () => {
-    setDeleteType('contributions');
-    setShowDeleteConfirm(true);
-  };
-
-  const handleDeleteLikes = async () => {
-    setDeleteType('likes');
-    setShowDeleteConfirm(true);
-  };
-
   const handleDeleteAccount = async () => {
     setDeleteType('account');
     setShowDeleteConfirm(true);
@@ -98,14 +89,6 @@ const SettingsPage: React.FC = () => {
       let message = '';
 
       switch (deleteType) {
-        case 'contributions':
-          endpoint = '/api/user/delete-contributions';
-          message = 'Alle deine Beiträge wurden gelöscht.';
-          break;
-        case 'likes':
-          endpoint = '/api/user/delete-likes';
-          message = 'Alle deine Likes wurden gelöscht.';
-          break;
         case 'account':
           endpoint = '/api/user/delete-account';
           message = 'Dein Konto wurde gelöscht.';
@@ -145,11 +128,28 @@ const SettingsPage: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('magiclink_email');
-    localStorage.removeItem('magiclink_token');
-    localStorage.removeItem('magiclink_timestamp');
-    router.push('/communitybook');
+  const handleLogout = async () => {
+    try {
+      // Sign out from Supabase if user is authenticated via Google OAuth
+      if (supabaseUser && supabaseIsAuthenticated) {
+        // Use the signOut method from AuthContext
+        // This will properly clear the Supabase session
+        await supabaseSignOut();
+      }
+
+      // Clear Magic Link data
+      localStorage.removeItem('magiclink_email');
+      localStorage.removeItem('magiclink_token');
+      localStorage.removeItem('magiclink_timestamp');
+
+      // Force page reload to clear all states
+      window.location.reload();
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Even if there's an error, clear local storage and reload
+      localStorage.clear();
+      window.location.reload();
+    }
   };
 
   if (!isAuthenticated) {
@@ -212,54 +212,6 @@ const SettingsPage: React.FC = () => {
           </h3>
 
           <div className="space-y-6">
-            {/* Delete Contributions */}
-            <div className="border border-red-200 rounded-lg p-6 bg-red-50">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <MessageSquare className="w-6 h-6 text-red-600" />
-                  <div>
-                    <h4 className="text-lg font-semibold text-red-800">
-                      Alle Beiträge löschen
-                    </h4>
-                    <p className="text-red-600 text-sm">
-                      Löscht alle deine eingereichten Beiträge unwiderruflich.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={handleDeleteContributions}
-                  disabled={isLoading}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
-                >
-                  Löschen
-                </button>
-              </div>
-            </div>
-
-            {/* Delete Likes */}
-            <div className="border border-red-200 rounded-lg p-6 bg-red-50">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Heart className="w-6 h-6 text-red-600" />
-                  <div>
-                    <h4 className="text-lg font-semibold text-red-800">
-                      Alle Likes löschen
-                    </h4>
-                    <p className="text-red-600 text-sm">
-                      Löscht alle deine vergebenen Likes unwiderruflich.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={handleDeleteLikes}
-                  disabled={isLoading}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
-                >
-                  Löschen
-                </button>
-              </div>
-            </div>
-
             {/* Delete Account */}
             <div className="border-2 border-red-400 rounded-lg p-6 bg-red-100">
               <div className="flex items-center justify-between">
@@ -305,15 +257,9 @@ const SettingsPage: React.FC = () => {
             <div className="text-center">
               <AlertTriangle className="w-16 h-16 text-red-600 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                {deleteType === 'contributions' && 'Alle Beiträge löschen?'}
-                {deleteType === 'likes' && 'Alle Likes löschen?'}
                 {deleteType === 'account' && 'Konto löschen?'}
               </h3>
               <p className="text-gray-600 mb-6">
-                {deleteType === 'contributions' &&
-                  'Diese Aktion kann nicht rückgängig gemacht werden.'}
-                {deleteType === 'likes' &&
-                  'Alle deine Likes werden unwiderruflich gelöscht.'}
                 {deleteType === 'account' &&
                   'Dein gesamtes Konto und alle Daten werden unwiderruflich gelöscht.'}
               </p>

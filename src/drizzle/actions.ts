@@ -20,6 +20,25 @@ export async function getVorschlaegeByThema(themaId: number) {
   return result;
 }
 
+export async function getVorschlaegeByThemaWithUser(themaId: number) {
+  const result = await db
+    .select({
+      id: vorschlaege.id,
+      themaId: vorschlaege.themaId,
+      ueberschrift: vorschlaege.ueberschrift,
+      text: vorschlaege.text,
+      likes: vorschlaege.likes,
+      comments: vorschlaege.comments,
+      userId: vorschlaege.userId,
+      createdAt: vorschlaege.createdAt,
+      userName: users.name,
+    })
+    .from(vorschlaege)
+    .leftJoin(users, eq(vorschlaege.userId, users.id))
+    .where(eq(vorschlaege.themaId, themaId));
+  return result;
+}
+
 export async function checkIfUserLiked(userId: number, vorschlagId: number) {
   const result = await db
     .select()

@@ -4,9 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSupabaseAuth } from '../lib/context/AuthContext';
 import { ThemaType } from '../lib/types';
+import { useHydration } from '../hooks/useHydration';
+import { ThemaWithVorschlaegeWithUser } from '../drizzle/schema';
 
 interface ContributionFormProps {
-  thema: ThemaType;
+  thema: ThemaWithVorschlaegeWithUser;
   onSubmit: () => void;
   onCancel: () => void;
 }
@@ -20,13 +22,12 @@ const ContributionForm: React.FC<ContributionFormProps> = ({
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user, isAuthenticated } = useSupabaseAuth();
+  const isHydrated = useHydration();
 
   // Get token from localStorage for magic link authentication
   const getToken = () => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('magiclink_token');
-    }
-    return null;
+    if (!isHydrated) return null;
+    return localStorage.getItem('magiclink_token');
   };
 
   // Close modal on escape key
@@ -56,12 +57,14 @@ const ContributionForm: React.FC<ContributionFormProps> = ({
   };
 
   const canSubmitVorschlag = () => {
+    if (!isHydrated) return true; // Allow submission before hydration
     const key = getTodayKey();
     const count = parseInt(localStorage.getItem(key) || '0', 10);
     return count < 5;
   };
 
   const incrementVorschlagCount = () => {
+    if (!isHydrated) return;
     const key = getTodayKey();
     const count = parseInt(localStorage.getItem(key) || '0', 10);
     localStorage.setItem(key, (count + 1).toString());
@@ -142,6 +145,39 @@ const ContributionForm: React.FC<ContributionFormProps> = ({
       onCancel();
     }
   };
+
+  // Don't render the form until hydration is complete
+  if (!isHydrated) {
+    return (
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-1 sm:p-2 md:p-4 overflow-hidden"
+          onClick={handleBackdropClick}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="bg-white rounded-xl shadow-2xl w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto overflow-x-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+              <div className="animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-32 mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-48 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-64"></div>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
 
   return (
     <AnimatePresence>

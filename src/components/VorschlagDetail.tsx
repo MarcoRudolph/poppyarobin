@@ -18,13 +18,18 @@ import { FcLike, FcLikePlaceholder } from 'react-icons/fc';
 import { IoArrowBack } from 'react-icons/io5';
 import { FaComment, FaHeart } from 'react-icons/fa';
 import { useSupabaseAuth } from '../lib/context/AuthContext';
+import { useHydration } from '../hooks/useHydration';
+
+// Extended type to include username
+interface VorschlagWithUser extends VorschlagType {
+  userName?: string | null;
+}
 
 interface VorschlagDetailProps {
-  vorschlag: VorschlagType;
+  vorschlag: VorschlagWithUser;
   onBack?: (updatedVorschlag?: { id: number; likes: number }) => void;
   onLikeUpdate?: (updatedVorschlag: { id: number; likes: number }) => void;
   showBackButton?: boolean;
-  // onClose?: (updatedVorschlag?: { id: number; likes: number }) => void; // REMOVE this prop
 }
 
 const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
@@ -42,24 +47,21 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [likeLimitReached, setLikeLimitReached] = useState(false);
+  const isHydrated = useHydration();
 
   const COMMENTS_PER_PAGE = 20;
   const INITIAL_COMMENTS = 3;
 
   // Helper function to get token from localStorage
   const getToken = () => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('magiclink_token');
-    }
-    return null;
+    if (!isHydrated) return null;
+    return localStorage.getItem('magiclink_token');
   };
 
   // Helper function to get user name from localStorage
   const getUserName = () => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('magiclink_email') || 'Anonymous';
-    }
-    return 'Anonymous';
+    if (!isHydrated) return 'Anonymous';
+    return localStorage.getItem('magiclink_email') || 'Anonymous';
   };
 
   useEffect(() => {
@@ -366,6 +368,22 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
 
   const totalPages = Math.ceil(comments.length / COMMENTS_PER_PAGE);
 
+  // Don't render the component until hydration is complete
+  if (!isHydrated) {
+    return (
+      <div className="w-full max-w-2xl mx-auto">
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-5/6 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-4/5"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-2xl mx-auto">
       {/* Zurück-Button (optional) */}
@@ -395,6 +413,13 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
         <h1 className="text-4xl font-bold text-gray-800 mb-4">
           {vorschlag.ueberschrift}
         </h1>
+        {vorschlag.userName &&
+          vorschlag.userName !== 'Seed User' &&
+          vorschlag.userName !== 'gelöschter user' && (
+            <p className="text-lg text-gray-500 mb-4">
+              von {vorschlag.userName}
+            </p>
+          )}
         <p className="text-xl text-gray-600 mb-6 leading-relaxed">
           {vorschlag.text}
         </p>

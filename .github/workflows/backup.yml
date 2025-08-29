@@ -1,0 +1,45 @@
+name: Daily Supabase Backup
+
+on:
+  schedule:
+    # Läuft täglich um 02:00 Europe/Berlin (Cron nutzt UTC → 00:00 UTC im Winter, 01:00 UTC im Sommer)
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install pg_dump
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Make backup folder
+        run: mkdir -p backups
+
+      - name: Dump database (compressed, custom format)
+        env:
+          DATABASE_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          TS=$(date -u +"%Y-%m-%dT%H-%M-%SZ")
+          pg_dump "$DATABASE_URL" \
+            -F c -Z 9 --verbose \
+            --no-owner --no-privileges \
+            -f "backups/supabase-$TS.dump"
+
+      # Variante A: als GitHub Artifact ablegen (mit einstellbarer Aufbewahrung)
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-backup
+          path: backups/
+          retention-days: 30
+
+      # Variante B (optional): Zu S3 hochladen
+      # - name: Configure AWS
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: eu-central-1
+      # - name: Upload to S3
+      #   run: aws s3 cp backups/ s3://DEIN-BUCKET/supabase/ --recursive

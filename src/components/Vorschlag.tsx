@@ -12,11 +12,17 @@ import {
   checkIfUserLikedWithSession,
 } from '../drizzle/actions';
 
+// Extended type to include username
+interface VorschlagWithUser extends VorschlagType {
+  userName?: string | null;
+}
+
 interface VorschlagProps {
-  vorschlag: VorschlagType;
-  onClick?: (vorschlag: VorschlagType) => void;
+  vorschlag: VorschlagWithUser;
+  onClick?: (vorschlag: VorschlagWithUser) => void;
   isDetailedView?: boolean;
-  onLike?: () => void; // <-- add this
+  onLike?: () => void;
+  onLikeUpdate?: (updatedVorschlag: { id: number; likes: number }) => void;
 }
 
 const Vorschlag: React.FC<VorschlagProps> = ({
@@ -24,6 +30,7 @@ const Vorschlag: React.FC<VorschlagProps> = ({
   onClick,
   isDetailedView = false,
   onLike,
+  onLikeUpdate,
 }) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(vorschlag.likes);
@@ -41,34 +48,42 @@ const Vorschlag: React.FC<VorschlagProps> = ({
 
   useEffect(() => {
     (async () => {
-      if (userId) {
+      // Check if user is authenticated via either method
+      const hasMagicLinkToken = localStorage.getItem('magiclink_token');
+      const hasGoogleAuth = userId;
+
+      if (hasMagicLinkToken || hasGoogleAuth) {
         const isLiked = await checkIfUserLikedWithSession(
-          userId,
-          user?.email || 'Anonymous',
+          userId || hasMagicLinkToken || 'Anonymous',
+          user?.email || localStorage.getItem('magiclink_email') || 'Anonymous',
           vorschlag.id,
         );
         setLiked(isLiked);
       }
     })();
-  }, [userId, vorschlag.id]);
+  }, [userId, vorschlag.id, user?.email]);
 
   const likeVorschlag = async () => {
-    if (!userId) {
+    // Check if user is authenticated via either method
+    const hasMagicLinkToken = localStorage.getItem('magiclink_token');
+    const hasGoogleAuth = userId;
+
+    if (!hasMagicLinkToken && !hasGoogleAuth) {
       alert('Bitte logge dich ein, um zu liken.');
       return;
     }
 
     if (liked) {
       await removeLikeWithSession(
-        userId,
-        user?.email || 'Anonymous',
+        userId || hasMagicLinkToken || 'Anonymous',
+        user?.email || localStorage.getItem('magiclink_email') || 'Anonymous',
         vorschlag.id,
       );
       setLiked(false);
     } else {
       await addLikeWithSession(
-        userId,
-        user?.email || 'Anonymous',
+        userId || hasMagicLinkToken || 'Anonymous',
+        user?.email || localStorage.getItem('magiclink_email') || 'Anonymous',
         vorschlag.id,
       );
       setLiked(true);
@@ -76,6 +91,12 @@ const Vorschlag: React.FC<VorschlagProps> = ({
     // Nach jedem Like/Unlike aktuelle Like-Anzahl aus DB laden
     const latestLikes = await getVorschlagLikes(vorschlag.id);
     setLikeCount(latestLikes);
+
+    // Notify parent component about the updated like count
+    if (onLikeUpdate) {
+      onLikeUpdate({ id: vorschlag.id, likes: latestLikes });
+    }
+
     if (onLike) onLike(); // <-- call after updating
   };
 
@@ -109,6 +130,11 @@ const Vorschlag: React.FC<VorschlagProps> = ({
         {liked ? <FcLike /> : <FcLikePlaceholder />}
       </button>
       <h3 className="text-xl font-semibold pr-8">{vorschlag.ueberschrift}</h3>
+      {vorschlag.userName &&
+        vorschlag.userName !== 'Seed User' &&
+        vorschlag.userName !== 'gelöschter user' && (
+          <p className="text-sm text-gray-500 mb-2">von {vorschlag.userName}</p>
+        )}
       <p className="text-gray-600">
         {likeCount} Likes | {commentCount} Kommentare
       </p>

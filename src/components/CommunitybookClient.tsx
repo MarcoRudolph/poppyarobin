@@ -3,22 +3,35 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Communitybook from './Communitybook';
-import { ThemaWithVorschlaege } from '../drizzle/schema';
+import { ThemaWithVorschlaegeWithUser } from '../drizzle/schema';
+import { useHydration } from '../hooks/useHydration';
 
 interface CommunitybookClientProps {
-  themenList: ThemaWithVorschlaege[];
+  themenList: ThemaWithVorschlaegeWithUser[];
 }
 
 const CommunitybookClient: React.FC<CommunitybookClientProps> = ({
   themenList,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const isHydrated = useHydration();
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 640);
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Don't render anything until hydration is complete to prevent mismatch
+  if (!isHydrated) {
+    return (
+      <div className="relative min-h-screen w-full">
+        <Communitybook themenList={themenList} />
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-screen w-full">
       {isMobile ? (

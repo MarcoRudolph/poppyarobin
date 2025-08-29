@@ -15,6 +15,23 @@ const SENDER_EMAIL = 'info@poppyarobin.de';
 
 const MAGIC_LINK_EXPIRY_DAYS = 7;
 
+// Determine base URL based on environment
+// For local development, use the IP address from environment variable
+// For production, always use the production domain
+const getBaseUrl = () => {
+  const envUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+  // If we have a custom base URL (like local IP), use it
+  if (envUrl && envUrl !== 'https://poppyarobin.de') {
+    return envUrl;
+  }
+
+  // Otherwise, always use production domain for magic links
+  return 'https://poppyarobin.de';
+};
+
+const BASE_URL = getBaseUrl();
+
 export async function POST(request: NextRequest) {
   try {
     const { name, email } = await request.json();
@@ -73,7 +90,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const magicLink = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/magic-login?token=${token}&email=${encodeURIComponent(email)}`;
+    // Always use production domain for magic links, so they work on smartphones
+    const magicLink = `${BASE_URL}/magic-login?token=${token}&email=${encodeURIComponent(email)}`;
     const mailOptions = {
       from: `"${SENDER_NAME}" <${SENDER_EMAIL}>`,
       to: email,

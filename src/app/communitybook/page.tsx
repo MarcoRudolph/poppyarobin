@@ -1,5 +1,8 @@
 import CommunitybookClient from '../../components/CommunitybookClient';
-import { fetchThemenList, getVorschlaegeByThema } from '../../drizzle/actions';
+import {
+  fetchThemenList,
+  getVorschlaegeByThemaWithUser,
+} from '../../drizzle/actions';
 import { db } from '../../drizzle';
 import {
   themen,
@@ -114,7 +117,7 @@ export default async function CommunitybookPage() {
   const themenList = await fetchThemenList();
   const themenWithVorschlaege = await Promise.all(
     themenList.map(async (thema) => {
-      const vorschlaege = await getVorschlaegeByThema(thema.id);
+      const vorschlaege = await getVorschlaegeByThemaWithUser(thema.id);
       return { ...thema, vorschlaege };
     }),
   );

@@ -91,3 +91,11 @@ export type CommentLike = InferModel<typeof commentLikes>;
 export type ThemaWithVorschlaege = Thema & {
   vorschlaege: Vorschlag[];
 };
+
+export type VorschlagWithUser = Vorschlag & {
+  userName: string | null;
+};
+
+export type ThemaWithVorschlaegeWithUser = Thema & {
+  vorschlaege: VorschlagWithUser[];
+};

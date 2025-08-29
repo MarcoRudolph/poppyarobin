@@ -54,28 +54,29 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Delete all data associated with this user in the correct order
-    // (to avoid foreign key constraint violations)
+    // Instead of deleting data, anonymize the user by setting username to "gelöschter user"
+    // This preserves the content while removing personal identification
 
-    // 1. Delete comment likes
-    await db.delete(commentLikes).where(eq(commentLikes.userId, dbUserId));
+    // 1. Update the user's name to "gelöschter user"
+    await db
+      .update(users)
+      .set({ name: 'gelöschter user' })
+      .where(eq(users.id, dbUserId));
 
-    // 2. Delete vorschlag likes
-    await db.delete(userLikes).where(eq(userLikes.userId, dbUserId));
-
-    // 3. Delete comments
-    await db.delete(kommentare).where(eq(kommentare.userId, dbUserId));
-
-    // 4. Delete vorschlaege
-    await db.delete(vorschlaege).where(eq(vorschlaege.userId, dbUserId));
-
-    // 5. Finally, delete the user
-    await db.delete(users).where(eq(users.id, dbUserId));
+    // 2. Clear sensitive user data (email, token) but keep the user record
+    await db
+      .update(users)
+      .set({
+        email: null,
+        token: null,
+      })
+      .where(eq(users.id, dbUserId));
 
     return NextResponse.json(
       {
         success: true,
-        message: 'Konto wurde erfolgreich gelöscht',
+        message:
+          'Deine persönlichen Daten wurden gelöscht. Deine Beiträge bleiben anonym erhalten.',
       },
       { status: 200 },
     );
