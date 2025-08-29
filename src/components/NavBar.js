@@ -1,24 +1,24 @@
 'use client';
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   Navbar,
-  MobileNav,
   Typography,
   Button,
   IconButton,
-  Card,
   Collapse,
   Menu,
   MenuHandler,
   MenuList,
   MenuItem,
 } from '@material-tailwind/react';
-import { useRouter, usePathname } from 'next/navigation';
-import { OpenSans, DesirePro } from '../lib/fonts';
-import { User } from 'lucide-react';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useSupabaseAuth } from '../lib/context/AuthContext';
 import { useHydration } from '../hooks/useHydration';
+import { DesirePro } from '../lib/fonts';
+import { useRouter, usePathname } from 'next/navigation';
+import { User } from 'lucide-react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 export function StickyNavbar() {
   const [openNav, setOpenNav] = React.useState(false);
@@ -91,7 +91,7 @@ export function StickyNavbar() {
   // Don't render authentication-dependent content until hydration is complete
   if (!isHydrated) {
     return (
-      <Navbar className="sticky top-0 z-10 h-max max-w-full rounded-none py-2 px-4 lg:px-8 lg:py-4">
+      <Navbar className="sticky top-0 z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-4">
         <div className="flex items-center justify-between text-blue-gray-900">
           <Typography
             as="a"
@@ -99,7 +99,7 @@ export function StickyNavbar() {
             className="mr-4 cursor-pointer py-1.5 font-medium"
           >
             <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 rounded w-32"></div>
+              <div className="h-8 w-32 rounded bg-gray-200"></div>
             </div>
           </Typography>
         </div>
@@ -108,16 +108,16 @@ export function StickyNavbar() {
   }
 
   const navList = (
-    <ul className="mb-4 mt-2 flex flex-col gap-6  lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-20">
+    <ul className="mb-4 mt-2 flex flex-col gap-6  lg:my-0 lg:flex-row lg:items-center lg:gap-20">
       <Typography
         as="li"
         variant="small"
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <a href="/" className={textStyle}>
+        <Link href="/" className={textStyle}>
           Home
-        </a>
+        </Link>
       </Typography>
       <Typography
         as="li"
@@ -125,9 +125,9 @@ export function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <a href="/#about" className={textStyle}>
+        <Link href="/#about" className={textStyle}>
           About
-        </a>
+        </Link>
       </Typography>
       {/* Dropdown for Werke */}
       <Menu>
@@ -139,28 +139,28 @@ export function StickyNavbar() {
             className="p-1 font-normal"
           >
             <span
-              className={`flex cursor-pointer items-center p-1 text-4xl text-black hover:text-gray-700 transition-colors ${DesirePro.className}`}
+              className={`flex cursor-pointer items-center p-1 text-4xl text-black transition-colors hover:text-gray-700 ${DesirePro.className}`}
             >
               Werke
             </span>
           </Typography>
         </MenuHandler>
-        <MenuList className="mt-0 border-none bg-white shadow-lg rounded-lg min-w-[200px]">
-          <MenuItem className="flex items-center gap-2 py-3 px-4 hover:bg-gray-50 transition-colors">
-            <a
+        <MenuList className="mt-0 min-w-[200px] rounded-lg border-none bg-white shadow-lg">
+          <MenuItem className="flex items-center gap-2 px-4 py-3 transition-colors hover:bg-gray-50">
+            <Link
               href="/werke/dreamer"
               className={`${textStyle} hover:text-gray-700`}
             >
               Dreamer
-            </a>
+            </Link>
           </MenuItem>
-          <MenuItem className="flex items-center gap-2 py-3 px-4 hover:bg-gray-50 transition-colors">
-            <a
+          <MenuItem className="flex items-center gap-2 px-4 py-3 transition-colors hover:bg-gray-50">
+            <Link
               href="/werke/sternendaemmerung"
               className={`${textStyle} hover:text-gray-700`}
             >
               Sternendämmerung
-            </a>
+            </Link>
           </MenuItem>
         </MenuList>
       </Menu>
@@ -170,9 +170,9 @@ export function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <a href="/qanda" className={textStyle}>
+        <Link href="/qanda" className={textStyle}>
           Q & A
-        </a>
+        </Link>
       </Typography>
       <Typography
         as="li"
@@ -180,24 +180,24 @@ export function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <a href="/communitybook" className={textStyle}>
+        <Link href="/communitybook" className={textStyle}>
           Communitybook
-        </a>
+        </Link>
       </Typography>
     </ul>
   );
 
   return (
     <Navbar className="sticky top-0 z-30 h-max max-w-full rounded-none bg-white px-4 py-2 lg:px-8 lg:py-4">
-      <div className="relative flex items-center w-full text-blue-gray-900 min-h-[56px]">
+      <div className="relative flex min-h-[56px] w-full items-center text-blue-gray-900">
         {/* Desktop: Centered navList */}
-        <div className="hidden lg:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block">
           {navList}
         </div>
         {/* Mobile hamburger left */}
         <IconButton
           variant="text"
-          className="lg:hidden h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent"
+          className="size-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
           ripple={false}
           onClick={() => setOpenNav(!openNav)}
         >
@@ -205,7 +205,7 @@ export function StickyNavbar() {
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
-              className="h-6 w-6"
+              className="size-6"
               viewBox="0 0 24 24"
               stroke="currentColor"
               strokeWidth={2}
@@ -219,7 +219,7 @@ export function StickyNavbar() {
           ) : (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="size-6"
               fill="none"
               stroke="currentColor"
               strokeWidth={2}
@@ -237,19 +237,19 @@ export function StickyNavbar() {
           {isAuthenticated && (
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <button className="p-2 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-400 ml-2">
-                  <User className="w-7 h-7 text-gray-700" />
+                <button className="ml-2 rounded-full p-2 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                  <User className="size-7 text-gray-700" />
                 </button>
               </DropdownMenu.Trigger>
-              <DropdownMenu.Content className="z-50 min-w-[160px] bg-white rounded-md shadow-lg border border-gray-200 py-2 mt-2">
-                <DropdownMenu.Item className="px-4 py-2 text-gray-800 hover:bg-gray-100 cursor-pointer text-base">
-                  <a href="/settings" className="block w-full">
+              <DropdownMenu.Content className="z-50 mt-2 min-w-[160px] rounded-md border border-gray-200 bg-white py-2 shadow-lg">
+                <DropdownMenu.Item className="cursor-pointer px-4 py-2 text-base text-gray-800 hover:bg-gray-100">
+                  <Link href="/settings" className="block w-full">
                     Settings
-                  </a>
+                  </Link>
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   onSelect={handleLogout}
-                  className="px-4 py-2 text-gray-800 hover:bg-gray-100 cursor-pointer text-base"
+                  className="cursor-pointer px-4 py-2 text-base text-gray-800 hover:bg-gray-100"
                 >
                   Abmelden
                 </DropdownMenu.Item>
