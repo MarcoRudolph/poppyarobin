@@ -29,6 +29,7 @@ if (typeof window !== 'undefined') {
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: true,
+        flowType: 'pkce',
       },
     });
   }
@@ -67,15 +68,34 @@ export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = ({
         setIsLoading(false);
       },
     );
-    // Initial check
-    supabase.auth.getUser().then(({ data }) => {
-      if (data?.user) {
-        setUser({ id: data.user.id, email: data.user.email ?? null });
-      } else {
+
+    // Initial check with error handling
+    supabase.auth
+      .getUser()
+      .then(({ data, error }) => {
+        if (error) {
+          // Silently handle refresh token errors - they're expected on first load
+          // Only log if it's not a refresh token error
+          if (!error.message.includes('Refresh Token')) {
+            console.log('Auth error:', error.message);
+          }
+          setUser(null);
+        } else if (data?.user) {
+          setUser({ id: data.user.id, email: data.user.email ?? null });
+        } else {
+          setUser(null);
+        }
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        // Handle any other errors silently
+        if (!error.message.includes('Refresh Token')) {
+          console.log('Auth check failed:', error.message);
+        }
         setUser(null);
-      }
-      setIsLoading(false);
-    });
+        setIsLoading(false);
+      });
+
     return () => {
       listener?.subscription.unsubscribe();
     };

@@ -40,7 +40,7 @@ const CommunitybookClient: React.FC<CommunitybookClientProps> = ({
           alt="Header Image"
           fill
           priority
-          className="absolute left-0 top-0 -z-10 w-full h-full object-cover"
+          className="absolute left-0 top-0 -z-10 size-full object-cover"
           style={{ objectFit: 'cover' }}
         />
       ) : (
@@ -49,7 +49,7 @@ const CommunitybookClient: React.FC<CommunitybookClientProps> = ({
           alt="Header Image"
           fill
           priority
-          className="absolute left-0 top-0 -z-10 w-full h-full object-cover"
+          className="absolute left-0 top-0 -z-10 size-full object-cover"
           style={{ objectFit: 'cover' }}
         />
       )}

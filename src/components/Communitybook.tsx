@@ -214,7 +214,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
     // Spezielles Icon für Microtropes
     if (themaName.toLowerCase().includes('microtropes')) {
       return (
-        <div className="relative w-8 h-8 rounded-lg overflow-hidden">
+        <div className="relative size-8 overflow-hidden rounded-lg">
           <Image
             src="/images/microtropes.png"
             alt="Microtropes"
@@ -265,29 +265,29 @@ const Communitybook: React.FC<CommunitybookProps> = ({
         className={`relative min-h-screen bg-gradient-to-b from-white to-gray-50 ${OpenSans.className}`}
       >
         {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-64 h-64 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-pink-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-          <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div className="pointer-events-none absolute left-0 top-0 size-full overflow-hidden">
+          <div className="absolute left-10 top-20 size-64 animate-blob rounded-full bg-purple-100 opacity-70 mix-blend-multiply blur-xl"></div>
+          <div className="animation-delay-2000 absolute right-10 top-40 size-72 animate-blob rounded-full bg-pink-100 opacity-70 mix-blend-multiply blur-xl"></div>
+          <div className="animation-delay-4000 absolute bottom-20 left-1/2 size-80 animate-blob rounded-full bg-blue-100 opacity-70 mix-blend-multiply blur-xl"></div>
         </div>
 
         {/* Main content */}
         <div className="relative flex flex-col items-center justify-center p-4">
           {/* Header Section - immer sichtbar */}
-          <div className="flex flex-col md:flex-row items-center w-full mt-5 p-2 rounded-lg">
-            <div className="w-4/5 md:w-3/5 mx-auto mt-6 border-blue-gray-400 border-b-2 pb-8">
+          <div className="mt-5 flex w-full flex-col items-center rounded-lg p-2 md:flex-row">
+            <div className="mx-auto mt-6 w-4/5 border-b-2 border-blue-gray-400 pb-8 md:w-3/5">
               <div
                 className={`flex flex-col items-start ${DesirePro.className}`}
               >
-                <h2 className="text-6xl md:text-9xl font-semibold text-gray-800 leading-none">
+                <h2 className="text-6xl font-semibold leading-none text-gray-800 md:text-9xl">
                   Eure Ideen,
                 </h2>
-                <h2 className="text-6xl md:text-9xl font-semibold text-gray-800 leading-none">
+                <h2 className="text-6xl font-semibold leading-none text-gray-800 md:text-9xl">
                   eure Geschichte
                 </h2>
               </div>
               <p
-                className={`text-2xl text-gray-700 mt-8 font-sans leading-relaxed italic ${OpenSans.className}`}
+                className={`mt-8 font-sans text-2xl italic leading-relaxed text-gray-700 ${OpenSans.className}`}
               >
                 Wir schreiben ein Buch basierend auf euren Themenvorschlägen,
                 Kommentaren und Likes, wobei die Likes die endgültige Auswahl
@@ -297,11 +297,11 @@ const Communitybook: React.FC<CommunitybookProps> = ({
           </div>
 
           {/* Loading state for authentication */}
-          <div className="flex flex-col items-center mt-6">
-            <div className="bg-white/90 rounded-xl shadow-xl p-8 w-full max-w-xl flex flex-col items-center">
+          <div className="mt-6 flex flex-col items-center">
+            <div className="flex w-full max-w-xl flex-col items-center rounded-xl bg-white/90 p-8 shadow-xl">
               <div className="animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-48 mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                <div className="mb-4 h-4 w-48 rounded bg-gray-200"></div>
+                <div className="h-4 w-32 rounded bg-gray-200"></div>
               </div>
             </div>
           </div>
@@ -315,27 +315,27 @@ const Communitybook: React.FC<CommunitybookProps> = ({
       className={`relative min-h-screen bg-gradient-to-b from-white to-gray-50 ${OpenSans.className}`}
     >
       {/* Decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute top-40 right-10 w-72 h-72 bg-pink-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+      <div className="pointer-events-none absolute left-0 top-0 size-full overflow-hidden">
+        <div className="absolute left-10 top-20 size-64 animate-blob rounded-full bg-purple-100 opacity-70 mix-blend-multiply blur-xl"></div>
+        <div className="animation-delay-2000 absolute right-10 top-40 size-72 animate-blob rounded-full bg-pink-100 opacity-70 mix-blend-multiply blur-xl"></div>
+        <div className="animation-delay-4000 absolute bottom-20 left-1/2 size-80 animate-blob rounded-full bg-blue-100 opacity-70 mix-blend-multiply blur-xl"></div>
       </div>
 
       {/* Main content */}
       <div className="relative flex flex-col items-center justify-center p-4">
         {/* Header Section - immer sichtbar */}
-        <div className="flex flex-col md:flex-row items-center w-full mt-5 p-2 rounded-lg">
-          <div className="w-4/5 md:w-3/5 mx-auto mt-6 border-blue-gray-400 border-b-2 pb-8">
+        <div className="mt-5 flex w-full flex-col items-center rounded-lg p-2 md:flex-row">
+          <div className="mx-auto mt-6 w-4/5 border-b-2 border-blue-gray-400 pb-8 md:w-3/5">
             <div className={`flex flex-col items-start ${DesirePro.className}`}>
-              <h2 className="text-6xl md:text-9xl font-semibold text-gray-800 leading-none">
+              <h2 className="text-6xl font-semibold leading-none text-gray-800 md:text-9xl">
                 Eure Ideen,
               </h2>
-              <h2 className="text-6xl md:text-9xl font-semibold text-gray-800 leading-none">
+              <h2 className="text-6xl font-semibold leading-none text-gray-800 md:text-9xl">
                 eure Geschichte
               </h2>
             </div>
             <p
-              className={`text-2xl text-gray-700 mt-8 font-sans leading-relaxed italic ${OpenSans.className}`}
+              className={`mt-8 font-sans text-2xl italic leading-relaxed text-gray-700 ${OpenSans.className}`}
             >
               Wir schreiben ein Buch basierend auf euren Themenvorschlägen,
               Kommentaren und Likes, wobei die Likes die endgültige Auswahl
@@ -347,20 +347,20 @@ const Communitybook: React.FC<CommunitybookProps> = ({
         {/* Authentication Section - immer sichtbar */}
         <div className={OpenSans.className}>
           {!isAuthenticated && (
-            <div className="flex flex-col items-center mt-6">
-              <div className="bg-white/90 rounded-xl shadow-xl p-8 w-full max-w-xl flex flex-col items-center">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">
+            <div className="mt-6 flex flex-col items-center">
+              <div className="flex w-full max-w-xl flex-col items-center rounded-xl bg-white/90 p-8 shadow-xl">
+                <h3 className="mb-4 text-lg font-semibold text-gray-700">
                   Ich will mitmachen
                 </h3>
                 {/* Magic Link Login */}
-                <div className="flex flex-col w-full items-center">
+                <div className="flex w-full flex-col items-center">
                   <input
                     id="name"
                     type="text"
                     placeholder="Dein Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-full bg-white/80 backdrop-blur-sm mb-2"
+                    className="mb-2 w-full rounded-lg border border-gray-300 bg-white/80 px-4 py-2 shadow-sm backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     autoComplete="name"
                   />
                   <input
@@ -369,7 +369,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                     placeholder="Deine E-Mail"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-full bg-white/80 backdrop-blur-sm mb-2"
+                    className="mb-2 w-full rounded-lg border border-gray-300 bg-white/80 px-4 py-2 shadow-sm backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     autoComplete="email"
                   />
                   <button
@@ -377,38 +377,37 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                     onClick={handleSendMagicLink}
                     disabled={isLoading || !email.trim() || !name.trim()}
                     className={`
-                      w-full
                       bg-halftone
-                      text-white
-                      py-2 px-4
-                      rounded-lg
-                      font-medium
-                      hover:opacity-90
-                      transition-all duration-200 transform hover:scale-105
-                      shadow-md
-                      text-lg
-                      disabled:opacity-50 disabled:cursor-not-allowed
                       mb-1
+                      w-full
+                      rounded-lg px-4
+                      py-2
+                      text-lg
+                      font-medium
+                      text-white shadow-md transition-all duration-200
+                      hover:scale-105
+                      hover:opacity-90
+                      disabled:cursor-not-allowed disabled:opacity-50
                     `}
                   >
                     {isLoading ? 'Wird gesendet...' : 'Send me magic link'}
                   </button>
                 </div>
                 {/* ODER Separator */}
-                <div className="flex items-center w-full my-4">
-                  <div className="flex-grow h-px bg-gray-300" />
-                  <span className="mx-4 text-gray-500 font-semibold">oder</span>
-                  <div className="flex-grow h-px bg-gray-300" />
+                <div className="my-4 flex w-full items-center">
+                  <div className="h-px grow bg-gray-300" />
+                  <span className="mx-4 font-semibold text-gray-500">oder</span>
+                  <div className="h-px grow bg-gray-300" />
                 </div>
                 {/* Google Login */}
-                <div className="flex flex-col w-full items-center">
+                <div className="flex w-full flex-col items-center">
                   <button
                     type="button"
                     onClick={signInWithGoogle}
                     disabled={isGoogleLoading}
-                    className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg font-medium shadow hover:bg-gray-50 transition-all text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-lg font-medium text-gray-700 shadow transition-all hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <svg className="w-5 h-5" viewBox="0 0 48 48">
+                    <svg className="size-5" viewBox="0 0 48 48">
                       <g>
                         <path
                           fill="#4285F4"
@@ -433,14 +432,14 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                   </button>
                 </div>
                 {tokenExpired && (
-                  <div className="text-red-600 text-lg mt-2">
+                  <div className="mt-2 text-lg text-red-600">
                     Dein Login-Token ist abgelaufen. Bitte fordere einen neuen
                     Magic Link an.
                   </div>
                 )}
                 {authError && (
                   <div
-                    className={`text-lg mt-2 ${authError.includes('gesendet') ? 'text-green-600' : 'text-red-600'}`}
+                    className={`mt-2 text-lg ${authError.includes('gesendet') ? 'text-green-600' : 'text-red-600'}`}
                   >
                     {authError}
                   </div>
@@ -470,13 +469,13 @@ const Communitybook: React.FC<CommunitybookProps> = ({
         {!isModalOpen && (
           <>
             {/* Header für alle Themen */}
-            <div className="w-full max-w-7xl mt-10">
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg p-6">
+            <div className="mt-10 w-full max-w-7xl">
+              <div className="rounded-xl bg-white/80 p-6 shadow-lg backdrop-blur-sm">
                 {/* Begrüßung für eingeloggte User */}
                 {isAuthenticated && (
-                  <div className="text-center mb-8">
+                  <div className="mb-8 text-center">
                     <div className="flex items-center justify-center space-x-4">
-                      <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                      <div className="relative size-16 overflow-hidden rounded-lg">
                         <Image
                           src="/images/bravomarco_a_charming_manga-style_young_woman_in_romantasy_atti_8a77cdf6-163f-4d7d-b3d9-fc9be13a1a6a.png"
                           alt="Romantasy Character"
@@ -485,7 +484,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                           className="object-cover"
                         />
                       </div>
-                      <p className="text-gray-600 text-lg">
+                      <p className="text-lg text-gray-600">
                         {userName
                           ? `Hey ${userName}, like deine Favoriten und/oder reiche Ideen ein.`
                           : 'Like deine Favoriten und/oder reiche Ideen ein.'}
@@ -496,19 +495,19 @@ const Communitybook: React.FC<CommunitybookProps> = ({
 
                 {/* Themen Grid */}
                 {themenList.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {sortedThemenList.map((thema) => (
                       <div
                         key={thema.id}
-                        className="bg-white border border-gray-200 rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col"
+                        className="flex flex-col rounded-xl border border-gray-200 bg-white p-6 shadow-md transition-all duration-300 hover:shadow-lg"
                       >
                         {/* Thema Header */}
                         <div className="mb-4">
-                          <div className="flex items-center space-x-3 mb-3">
+                          <div className="mb-3 flex items-center space-x-3">
                             {thema.name
                               .toLowerCase()
                               .includes('microtropes') ? (
-                              <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                              <div className="relative size-16 overflow-hidden rounded-lg">
                                 <Image
                                   src="/images/microtropes.png"
                                   alt="Microtropes"
@@ -518,7 +517,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                                 />
                               </div>
                             ) : thema.name.toLowerCase().includes('tropes') ? (
-                              <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                              <div className="relative size-16 overflow-hidden rounded-lg">
                                 <Image
                                   src="/images/Tropes2.png"
                                   alt="Tropes"
@@ -528,7 +527,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                                 />
                               </div>
                             ) : thema.name.toLowerCase().includes('wesen') ? (
-                              <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                              <div className="relative size-16 overflow-hidden rounded-lg">
                                 <Image
                                   src="/images/Wesen.png"
                                   alt="Wesen"
@@ -540,7 +539,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                             ) : thema.name
                                 .toLowerCase()
                                 .includes('settings') ? (
-                              <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                              <div className="relative size-16 overflow-hidden rounded-lg">
                                 <Image
                                   src="/images/Settings.png"
                                   alt="Settings"
@@ -551,7 +550,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                               </div>
                             ) : thema.name.toLowerCase().includes('no go') ||
                               thema.name.toLowerCase().includes('nogo') ? (
-                              <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                              <div className="relative size-16 overflow-hidden rounded-lg">
                                 <Image
                                   src="/images/NOGO.png"
                                   alt="No Go"
@@ -563,7 +562,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                             ) : thema.name
                                 .toLowerCase()
                                 .includes('konflikt') ? (
-                              <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                              <div className="relative size-16 overflow-hidden rounded-lg">
                                 <Image
                                   src="/images/Konflikt.png"
                                   alt="Konflikt"
@@ -574,7 +573,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                               </div>
                             ) : (
                               <div
-                                className={`${getThemaColor(thema.id)} text-white p-2 rounded-lg text-xl`}
+                                className={`${getThemaColor(thema.id)} rounded-lg p-2 text-xl text-white`}
                               >
                                 {getThemaIcon(thema.id, thema.name)}
                               </div>
@@ -583,18 +582,18 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                               {thema.name}
                             </h4>
                           </div>
-                          <div className="flex items-center justify-start text-base text-gray-600 mb-3">
+                          <div className="mb-3 flex items-center justify-start text-base text-gray-600">
                             <span>{thema.vorschlaege.length} Beiträge</span>
                           </div>
                         </div>
 
                         {/* Vorschläge Vorschau */}
                         {thema.vorschlaege.length > 0 && (
-                          <div className="mb-4 flex-grow">
-                            <div className="flex items-center justify-center mb-2">
+                          <div className="mb-4 grow">
+                            <div className="mb-2 flex items-center justify-center">
                               <button
                                 onClick={() => toggleThemaExpansion(thema.id)}
-                                className="text-sm text-gray-500 hover:text-gray-700 transition-colors font-medium"
+                                className="text-sm font-medium text-gray-500 transition-colors hover:text-gray-700"
                                 title={
                                   expandedThema === thema.id
                                     ? 'Weniger anzeigen'
@@ -638,7 +637,7 @@ const Communitybook: React.FC<CommunitybookProps> = ({
                         {isAuthenticated && (
                           <button
                             onClick={() => handleAddContribution(thema)}
-                            className="mt-4 flex items-center justify-center text-xl font-semibold bg-gradient-to-r from-[#e7c873] via-[#f7d6e6] to-[#e3c6f7] text-gray-900 px-6 py-3 rounded-lg shadow-xl hover:brightness-105 transition-all duration-200 gap-2 border-2 border-black"
+                            className="mt-4 flex items-center justify-center gap-2 rounded-lg border-2 border-black bg-gradient-to-r from-[#e7c873] via-[#f7d6e6] to-[#e3c6f7] px-6 py-3 text-xl font-semibold text-gray-900 shadow-xl transition-all duration-200 hover:brightness-105"
                           >
                             Beitrag hinzufügen
                           </button>

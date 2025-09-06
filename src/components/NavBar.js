@@ -115,7 +115,7 @@ export function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <Link href="/" className={textStyle}>
+        <Link href="/" className={`${textStyle} whitespace-nowrap`}>
           Home
         </Link>
       </Typography>
@@ -125,7 +125,7 @@ export function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <Link href="/#about" className={textStyle}>
+        <Link href="/#about" className={`${textStyle} whitespace-nowrap`}>
           About
         </Link>
       </Typography>
@@ -139,7 +139,7 @@ export function StickyNavbar() {
             className="p-1 font-normal"
           >
             <span
-              className={`flex cursor-pointer items-center p-1 text-4xl text-black transition-colors hover:text-gray-700 ${DesirePro.className}`}
+              className={`flex cursor-pointer items-center whitespace-nowrap p-1 text-4xl text-black transition-colors hover:text-gray-700 ${DesirePro.className}`}
             >
               Werke
             </span>
@@ -170,7 +170,7 @@ export function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <Link href="/qanda" className={textStyle}>
+        <Link href="/qanda" className={`${textStyle} whitespace-nowrap`}>
           Q & A
         </Link>
       </Typography>
@@ -180,7 +180,10 @@ export function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <Link href="/communitybook" className={textStyle}>
+        <Link
+          href="/communitybook"
+          className={`${textStyle} whitespace-nowrap`}
+        >
           Communitybook
         </Link>
       </Typography>
