@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { VorschlagType, CommentType } from '../lib/types';
 import {
   fetchComments,
@@ -46,6 +46,8 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
   const [showAllComments, setShowAllComments] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
+  const [likingComments, setLikingComments] = useState<Set<number>>(new Set());
   const [likeLimitReached, setLikeLimitReached] = useState(false);
   const isHydrated = useHydration();
 
@@ -53,23 +55,18 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
   const INITIAL_COMMENTS = 3;
 
   // Helper function to get token from localStorage
-  const getToken = () => {
+  const getToken = useCallback(() => {
     if (!isHydrated) return null;
     return localStorage.getItem('magiclink_token');
-  };
+  }, [isHydrated]);
 
   // Helper function to get user name from localStorage
-  const getUserName = () => {
+  const getUserName = useCallback(() => {
     if (!isHydrated) return 'Anonymous';
     return localStorage.getItem('magiclink_email') || 'Anonymous';
-  };
+  }, [isHydrated]);
 
-  useEffect(() => {
-    loadComments();
-    checkUserLikeStatus();
-  }, [vorschlag.id]);
-
-  const loadComments = async () => {
+  const loadComments = useCallback(async () => {
     try {
       const fetchedComments = await fetchComments(vorschlag.id);
       // Sortiere nach Likes (Top-Kommentare zuerst)
@@ -78,9 +75,9 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
     } catch (error) {
       console.error('Error loading comments:', error);
     }
-  };
+  }, [vorschlag.id]);
 
-  const checkUserLikeStatus = async () => {
+  const checkUserLikeStatus = useCallback(async () => {
     try {
       if (user?.id) {
         // Google OAuth user - use Supabase user ID and email
@@ -105,9 +102,19 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
     } catch (error) {
       console.error('Error checking user like status:', error);
     }
-  };
+  }, [user?.id, user?.email, vorschlag.id, getToken, getUserName]);
+
+  useEffect(() => {
+    loadComments();
+    checkUserLikeStatus();
+  }, [vorschlag.id, loadComments, checkUserLikeStatus]);
 
   const handleVorschlagLike = async () => {
+    // Prevent multiple rapid clicks
+    if (isLiking) {
+      return;
+    }
+
     // Check if user is authenticated via either method
     const hasMagicLinkToken = getToken();
     const hasGoogleAuth = user?.id;
@@ -123,6 +130,8 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
       );
       return;
     }
+
+    setIsLiking(true);
 
     try {
       if (liked) {
@@ -190,16 +199,25 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
       }
     } catch (error) {
       console.error('Error handling like:', error);
+      // Revert the optimistic update on error
+      setLiked(!liked);
       // Show more specific error message
       if (error instanceof Error) {
         alert(`Fehler beim Liken: ${error.message}`);
       } else {
         alert('Fehler beim Liken. Bitte versuche es erneut.');
       }
+    } finally {
+      setIsLiking(false);
     }
   };
 
   const handleCommentLike = async (commentId: number) => {
+    // Prevent multiple rapid clicks on the same comment
+    if (likingComments.has(commentId)) {
+      return;
+    }
+
     // Check if user is authenticated via either method
     const hasMagicLinkToken = getToken();
     const hasGoogleAuth = user?.id;
@@ -212,6 +230,8 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
     const comment = comments.find((c) => c.id === commentId);
 
     if (!comment) return;
+
+    setLikingComments((prev) => new Set(prev).add(commentId));
 
     try {
       let isLiked: boolean;
@@ -302,6 +322,12 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
       } else {
         alert('Fehler beim Liken. Bitte versuche es erneut.');
       }
+    } finally {
+      setLikingComments((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(commentId);
+        return newSet;
+      });
     }
   };
 
@@ -371,13 +397,13 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
   // Don't render the component until hydration is complete
   if (!isHydrated) {
     return (
-      <div className="w-full max-w-2xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+      <div className="mx-auto w-full max-w-2xl">
+        <div className="mb-8 rounded-xl bg-white p-8 shadow-lg">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-5/6 mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-4/5"></div>
+            <div className="mb-4 h-8 w-3/4 rounded bg-gray-200"></div>
+            <div className="mb-2 h-4 w-full rounded bg-gray-200"></div>
+            <div className="mb-2 h-4 w-5/6 rounded bg-gray-200"></div>
+            <div className="h-4 w-4/5 rounded bg-gray-200"></div>
           </div>
         </div>
       </div>
@@ -385,22 +411,21 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="mx-auto w-full max-w-2xl">
       {/* Zurück-Button (optional) */}
       {showBackButton && onBack && (
         <button
           onClick={() => onBack({ id: vorschlag.id, likes: likeCount })}
           className={`
-            flex items-center space-x-2 mb-6
-            bg-halftone
-            text-white
-            py-3 px-4
+            bg-halftone mb-6 flex items-center
+            space-x-2
             rounded-lg
-            font-medium
-            hover:opacity-90
-            transition-all duration-200 transform hover:scale-105
-            shadow-md
+            px-4 py-3
             text-xl
+            font-medium
+            text-white
+            shadow-md transition-all duration-200 hover:scale-105
+            hover:opacity-90
           `}
         >
           <IoArrowBack className="text-xl" />
@@ -409,18 +434,18 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
       )}
 
       {/* Vorschlag-Details */}
-      <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">
+      <div className="mb-8 rounded-xl bg-white p-8 shadow-lg">
+        <h1 className="mb-4 text-4xl font-bold text-gray-800">
           {vorschlag.ueberschrift}
         </h1>
         {vorschlag.userName &&
           vorschlag.userName !== 'Seed User' &&
           vorschlag.userName !== 'gelöschter user' && (
-            <p className="text-lg text-gray-500 mb-4">
+            <p className="mb-4 text-lg text-gray-500">
               von {vorschlag.userName}
             </p>
           )}
-        <p className="text-xl text-gray-600 mb-6 leading-relaxed">
+        <p className="mb-6 text-xl leading-relaxed text-gray-600">
           {vorschlag.text}
         </p>
 
@@ -428,12 +453,12 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
         <div className="flex items-center space-x-6">
           <button
             onClick={handleVorschlagLike}
-            disabled={likeLimitReached}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+            disabled={likeLimitReached || isLiking}
+            className={`flex items-center space-x-2 rounded-lg px-4 py-2 transition-all ${
               liked
-                ? 'text-red-500 bg-red-50'
-                : 'text-gray-600 bg-gray-50 hover:bg-gray-100'
-            } ${likeLimitReached ? 'opacity-50 cursor-not-allowed' : ''}`}
+                ? 'bg-red-50 text-red-500'
+                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+            } ${likeLimitReached || isLiking ? 'cursor-not-allowed opacity-50' : ''}`}
           >
             {liked ? (
               <FcLike className="text-2xl" />
@@ -441,6 +466,7 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
               <FcLikePlaceholder className="text-2xl" />
             )}
             <span className="text-lg font-medium">{likeCount}</span>
+            {isLiking && <span className="text-sm text-gray-500">...</span>}
           </button>
 
           <div className="flex items-center space-x-2 text-gray-600">
@@ -451,27 +477,35 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
       </div>
 
       {/* Kommentare */}
-      <div className="bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold mb-4">Kommentare</h2>
+      <div className="rounded-xl bg-white p-8 shadow-lg">
+        <h2 className="mb-4 text-2xl font-bold">Kommentare</h2>
         {/* Kommentar-Liste, scrollbar */}
         {comments.length > 0 ? (
-          <div className="space-y-4 mb-4 max-h-60 overflow-y-auto pr-2">
+          <div className="mb-4 max-h-60 space-y-4 overflow-y-auto pr-2">
             {displayedComments.map((comment) => (
-              <div key={comment.id} className="bg-gray-50 rounded-lg p-4">
-                <div className="flex items-center mb-2">
-                  <span className="font-semibold text-gray-800 mr-2">
+              <div key={comment.id} className="rounded-lg bg-gray-50 p-4">
+                <div className="mb-2 flex items-center">
+                  <span className="mr-2 font-semibold text-gray-800">
                     {comment.userName}
                   </span>
                   <button
-                    className="ml-auto text-pink-500 hover:text-pink-700"
+                    className={`ml-auto text-pink-500 hover:text-pink-700 ${
+                      likingComments.has(comment.id)
+                        ? 'cursor-not-allowed opacity-50'
+                        : ''
+                    }`}
                     onClick={() => handleCommentLike(comment.id)}
+                    disabled={likingComments.has(comment.id)}
                   >
                     <FaHeart
-                      className={`inline-block mr-1 ${
+                      className={`mr-1 inline-block ${
                         comment.likes > 0 ? 'text-pink-500' : 'text-gray-400'
                       }`}
                     />
                     {comment.likes}
+                    {likingComments.has(comment.id) && (
+                      <span className="ml-1 text-xs">...</span>
+                    )}
                   </button>
                 </div>
                 <p className="text-gray-700">{comment.text}</p>
@@ -479,7 +513,7 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 mb-4">Noch keine Kommentare.</p>
+          <p className="mb-4 text-gray-500">Noch keine Kommentare.</p>
         )}
 
         {/* Kommentar-Formular */}
@@ -489,18 +523,18 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Schreibe einen Kommentar..."
-              className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent resize-none"
+              className="w-full resize-none rounded-lg border border-gray-300 p-4 focus:border-transparent focus:ring-2 focus:ring-pink-400"
               rows={3}
               maxLength={500}
             />
-            <div className="flex justify-between items-center mt-2">
+            <div className="mt-2 flex items-center justify-between">
               <span className="text-sm text-gray-500">
                 {newComment.length}/500 Zeichen
               </span>
               <button
                 type="submit"
                 disabled={isSubmitting || !newComment.trim()}
-                className="px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-lg bg-pink-500 px-6 py-2 text-white hover:bg-pink-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? 'Wird gespeichert...' : 'Kommentar hinzufügen'}
               </button>
@@ -514,7 +548,7 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
             {!showAllComments ? (
               <button
                 onClick={() => setShowAllComments(true)}
-                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                className="rounded-lg bg-gray-200 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-300"
               >
                 Mehr anzeigen ({comments.length - INITIAL_COMMENTS} weitere)
               </button>
@@ -529,7 +563,7 @@ const VorschlagDetail: React.FC<VorschlagDetailProps> = ({
                       <button
                         key={page}
                         onClick={() => setCurrentPage(page)}
-                        className={`px-3 py-1 rounded ${
+                        className={`rounded px-3 py-1 ${
                           currentPage === page
                             ? 'bg-pink-500 text-white'
                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
