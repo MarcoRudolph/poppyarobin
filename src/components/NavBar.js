@@ -174,19 +174,6 @@ export function StickyNavbar() {
           Q & A
         </Link>
       </Typography>
-      <Typography
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="p-1 font-normal"
-      >
-        <Link
-          href="/communitybook"
-          className={`${textStyle} whitespace-nowrap`}
-        >
-          Communitybook
-        </Link>
-      </Typography>
     </ul>
   );
 
